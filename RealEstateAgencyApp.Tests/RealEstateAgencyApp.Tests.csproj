@@ -17,8 +17,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RealEstateAgency.Domain\RealEstateAgency.Domain.csproj" />
-    <ProjectReference Include="..\RealEstateAgency.Seed\RealEstateAgency.Seed.csproj" />
+    <ProjectReference Include="..\RealEstateAgencyApp.Domain\RealEstateAgencyApp.Domain.csproj" />
+    <ProjectReference Include="..\RealEstateAgencyApp.Seed\RealEstateAgencyApp.Seed.csproj" />
   </ItemGroup>
 
   <ItemGroup>

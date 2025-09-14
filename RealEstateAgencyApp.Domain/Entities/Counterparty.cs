@@ -1,6 +1,4 @@
-﻿
-
-namespace RealEstateAgencyApp.Domain.Entities;
+﻿namespace RealEstateAgencyApp.Domain.Entities;
 
 /// <summary>
 /// Represents a client (counterparty) of the real estate agency.
