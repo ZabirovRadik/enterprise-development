@@ -50,15 +50,15 @@ public static class DataSeed
     public static List<Request> GetRequests(List<Counterparty> clients, List<RealEstateObject> estates) =>
         new()
         {
-            new Request { Id = 1, CounterpartyId=1, Client=clients[0], RealEstateObjectId=1, Estate=estates[0], Type=RequestType.Sell, Price=8_000_000, Date=new DateTime(2024,5,10) },
-            new Request { Id = 2, CounterpartyId=2, Client=clients[1], RealEstateObjectId=2, Estate=estates[1], Type=RequestType.Buy, Price=12_500_000, Date=new DateTime(2024,6,15) },
-            new Request { Id = 3, CounterpartyId=3, Client=clients[2], RealEstateObjectId=3, Estate=estates[2], Type=RequestType.Sell, Price=45_000_000, Date=new DateTime(2024,7,01) },
-            new Request { Id = 4, CounterpartyId=4, Client=clients[3], RealEstateObjectId=4, Estate=estates[3], Type=RequestType.Buy, Price=3_000_000, Date=new DateTime(2024,8,12) },
-            new Request { Id = 5, CounterpartyId=5, Client=clients[4], RealEstateObjectId=5, Estate=estates[4], Type=RequestType.Sell, Price=600_000, Date=new DateTime(2024,9,20) },
-            new Request { Id = 6, CounterpartyId=6, Client=clients[5], RealEstateObjectId=6, Estate=estates[5], Type=RequestType.Buy, Price=10_000_000, Date=new DateTime(2024,10,05) },
-            new Request { Id = 7, CounterpartyId=7, Client=clients[6], RealEstateObjectId=7, Estate=estates[6], Type=RequestType.Sell, Price=25_000_000, Date=new DateTime(2024,11,11) },
-            new Request { Id = 8, CounterpartyId=8, Client=clients[7], RealEstateObjectId=8, Estate=estates[7], Type=RequestType.Buy, Price=55_000_000, Date=new DateTime(2024,12,01) },
-            new Request { Id = 9, CounterpartyId=9, Client=clients[8], RealEstateObjectId=9, Estate=estates[8], Type=RequestType.Sell, Price=9_000_000, Date=new DateTime(2025,1,15) },
-            new Request { Id = 10, CounterpartyId=10, Client=clients[9], RealEstateObjectId=10, Estate=estates[9], Type=RequestType.Buy, Price=80_000_000, Date=new DateTime(2025,2,20) }
+            new Request { Id = 1, CounterpartyId=1, Counterparty=clients[0], RealEstateObjectId=1, Estate=estates[0], Type=RequestType.Sell, Price=8_000_000, Date=new DateTime(2024,5,10) },
+            new Request { Id = 2, CounterpartyId=2, Counterparty=clients[1], RealEstateObjectId=2, Estate=estates[1], Type=RequestType.Buy, Price=12_500_000, Date=new DateTime(2024,6,15) },
+            new Request { Id = 3, CounterpartyId=3, Counterparty=clients[2], RealEstateObjectId=3, Estate=estates[2], Type=RequestType.Sell, Price=45_000_000, Date=new DateTime(2024,7,01) },
+            new Request { Id = 4, CounterpartyId=4, Counterparty=clients[3], RealEstateObjectId=4, Estate=estates[3], Type=RequestType.Buy, Price=3_000_000, Date=new DateTime(2024,8,12) },
+            new Request { Id = 5, CounterpartyId=5, Counterparty=clients[4], RealEstateObjectId=5, Estate=estates[4], Type=RequestType.Sell, Price=600_000, Date=new DateTime(2024,9,20) },
+            new Request { Id = 6, CounterpartyId=6, Counterparty=clients[5], RealEstateObjectId=6, Estate=estates[5], Type=RequestType.Buy, Price=10_000_000, Date=new DateTime(2024,10,05) },
+            new Request { Id = 7, CounterpartyId=7, Counterparty=clients[6], RealEstateObjectId=7, Estate=estates[6], Type=RequestType.Sell, Price=25_000_000, Date=new DateTime(2024,11,11) },
+            new Request { Id = 8, CounterpartyId=8, Counterparty=clients[7], RealEstateObjectId=8, Estate=estates[7], Type=RequestType.Buy, Price=55_000_000, Date=new DateTime(2024,12,01) },
+            new Request { Id = 9, CounterpartyId=9, Counterparty=clients[8], RealEstateObjectId=9, Estate=estates[8], Type=RequestType.Sell, Price=9_000_000, Date=new DateTime(2025,1,15) },
+            new Request { Id = 10, CounterpartyId=10, Counterparty=clients[9], RealEstateObjectId=10, Estate=estates[9], Type=RequestType.Buy, Price=80_000_000, Date=new DateTime(2025,2,20) }
         };
 }

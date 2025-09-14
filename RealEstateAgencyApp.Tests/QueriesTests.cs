@@ -26,7 +26,7 @@ public class QueriesTests
 
         var sellers = _requests
             .Where(r => r.Type == RequestType.Sell && r.Date >= from && r.Date <= to)
-            .Select(r => r.Client!.FullName)
+            .Select(r => r.Counterparty!.FullName)
             .Distinct()
             .ToList();
 
@@ -44,7 +44,7 @@ public class QueriesTests
     {
         var topBuyers = _requests
             .Where(r => r.Type == RequestType.Buy)
-            .GroupBy(r => r.Client)
+            .GroupBy(r => r.Counterparty)
             .Select(g => new { Client = g.Key!, Count = g.Count() })
             .OrderByDescending(x => x.Count)
             .Take(5)
@@ -52,7 +52,7 @@ public class QueriesTests
 
         var topSellers = _requests
             .Where(r => r.Type == RequestType.Sell)
-            .GroupBy(r => r.Client)
+            .GroupBy(r => r.Counterparty)
             .Select(g => new { Client = g.Key!, Count = g.Count() })
             .OrderByDescending(x => x.Count)
             .Take(5)
@@ -92,7 +92,7 @@ public class QueriesTests
 
         var clients = _requests
             .Where(r => r.Price == minPrice)
-            .Select(r => r.Client!.FullName)
+            .Select(r => r.Counterparty!.FullName)
             .Distinct()
             .ToList();
 
@@ -111,7 +111,7 @@ public class QueriesTests
 
         var clients = _requests
             .Where(r => r.Type == RequestType.Buy && r.Estate!.Type == type)
-            .Select(r => r.Client!.FullName)
+            .Select(r => r.Counterparty!.FullName)
             .Distinct()
             .OrderBy(c => c)
             .ToList();

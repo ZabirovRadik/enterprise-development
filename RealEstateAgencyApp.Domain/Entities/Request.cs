@@ -10,7 +10,7 @@ public class Request
     public required int Id { get; set; }
 
     public required int CounterpartyId { get; set; }
-    public Counterparty? Client { get; set; }
+    public Counterparty? Counterparty { get; set; }
 
     public required int RealEstateObjectId { get; set; }
     public RealEstateObject? Estate { get; set; }
