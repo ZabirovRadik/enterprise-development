@@ -18,7 +18,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RealEstateAgencyApp.Domain\RealEstateAgencyApp.Domain.csproj" />
-    <ProjectReference Include="..\RealEstateAgencyApp.Seed\RealEstateAgencyApp.Seed.csproj" />
   </ItemGroup>
 
   <ItemGroup>

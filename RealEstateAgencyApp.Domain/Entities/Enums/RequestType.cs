@@ -5,6 +5,13 @@
 /// </summary>
 public enum RequestType
 {
+    /// <summary>
+    /// Request to purchase a real estate object.
+    /// </summary>
     Buy,
+
+    /// <summary>
+    /// Request to sell a real estate object.
+    /// </summary>
     Sell
 }
