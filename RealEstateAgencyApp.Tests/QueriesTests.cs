@@ -47,30 +47,48 @@ public class QueriesTests : IClassFixture<DataSeed>
     [Fact]
     public void GetTop5ClientsByRequests()
     {
-        const int expectedTopCount = 5;
-        const int expectedRequestCountPerClient = 1;
+        var expectedTopBuyers = new[]
+        {
+        "Petr Petrov",    // 2 
+        "Anna Smirnova",  // 1
+        "Dmitry Orlov",   // 1
+        "Alexey Romanov", // 1
+        "Andrey Popov"    // 1
+    };
+
+        var expectedTopSellers = new[]
+        {
+        "Ivan Ivanov",    // 3 
+        "Sergey Sidorov", // 2
+        "Elena Volkova",  // 1
+        "Maria Kuznetsova", // 1
+        "Natalia Ivanova"   // 1
+    };
 
         var topBuyers = _testData.Requests
             .Where(r => r.Type == RequestType.Buy)
-            .GroupBy(r => r.Counterparty)
-            .Select(g => new { Client = g.Key!, Count = g.Count() })
+            .GroupBy(r => r.Counterparty!.FullName)
+            .Select(g => new { Client = g.Key, Count = g.Count() })
             .OrderByDescending(x => x.Count)
+            .ThenBy(x => x.Client)
             .Take(5)
+            .Select(x => x.Client)
             .ToList();
 
         var topSellers = _testData.Requests
             .Where(r => r.Type == RequestType.Sell)
-            .GroupBy(r => r.Counterparty)
-            .Select(g => new { Client = g.Key!, Count = g.Count() })
+            .GroupBy(r => r.Counterparty!.FullName)
+            .Select(g => new { Client = g.Key, Count = g.Count() })
             .OrderByDescending(x => x.Count)
+            .ThenBy(x => x.Client)
             .Take(5)
+            .Select(x => x.Client)
             .ToList();
 
-        Assert.All(topBuyers, x => Assert.Equal(expectedRequestCountPerClient, x.Count));
-        Assert.All(topSellers, x => Assert.Equal(expectedRequestCountPerClient, x.Count));
-        Assert.Equal(expectedTopCount, topBuyers.Count); 
-        Assert.Equal(expectedTopCount, topSellers.Count);
+        Assert.Equal(expectedTopBuyers, topBuyers);
+        Assert.Equal(expectedTopSellers, topSellers);
     }
+
 
     /// <summary>
     /// Get request count for each type of real estate.

@@ -81,6 +81,10 @@ public class DataSeed
             new Request { Id = 7, Counterparty=clients[6], Estate=estates[6], Type=RequestType.Sell, Price=25_000_000, Date=new DateTime(2024,11,11) },
             new Request { Id = 8, Counterparty=clients[7], Estate=estates[7], Type=RequestType.Buy, Price=55_000_000, Date=new DateTime(2024,12,01) },
             new Request { Id = 9, Counterparty=clients[8], Estate=estates[8], Type=RequestType.Sell, Price=9_000_000, Date=new DateTime(2025,1,15) },
-            new Request { Id = 10, Counterparty=clients[9], Estate=estates[9], Type=RequestType.Buy, Price=80_000_000, Date=new DateTime(2025,2,20) }
+            new Request { Id = 10, Counterparty=clients[9], Estate=estates[9], Type=RequestType.Buy, Price=80_000_000, Date=new DateTime(2025,2,20) },
+            new Request { Id = 11, Counterparty=clients[0], Estate=estates[1], Type=RequestType.Sell, Price=9_000_000, Date=new DateTime(2024,3,10) },
+            new Request { Id = 12, Counterparty=clients[1], Estate=estates[2], Type=RequestType.Buy, Price=14_000_000, Date=new DateTime(2024,4,05) },
+            new Request { Id = 13, Counterparty=clients[1], Estate=estates[5], Type=RequestType.Buy, Price=11_000_000, Date=new DateTime(2024,7,19) },
+            new Request { Id = 14, Counterparty=clients[6], Estate=estates[6], Type=RequestType.Buy, Price=24_000_000, Date=new DateTime(2024,11,20) }
         };
 }
