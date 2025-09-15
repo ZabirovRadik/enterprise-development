@@ -1,17 +1,39 @@
-﻿using RealEstateAgencyApp.Domain.Entities;
-using RealEstateAgencyApp.Domain.Entities.Enums;
-
-namespace RealEstateAgencyApp.Tests;
+﻿namespace RealEstateAgencyApp.Tests.Seeds;
 
 /// <summary>
 /// Provides initial data for seeding in-memory collections.
 /// </summary>
-public static class DataSeed
+public class DataSeed
 {
     /// <summary>
-    /// Returns a predefined list of real estate objects.
+    /// Gets the list of real estate objects.
     /// </summary>
-    public static List<RealEstateObject> GetEstates() =>
+    public List<RealEstateObject> Estates { get; }
+
+    /// <summary>
+    /// Gets the list of counterparties (clients).
+    /// </summary>
+    public List<Counterparty> Clients { get; }
+
+    /// <summary>
+    /// Gets the list of requests linking clients with estates.
+    /// </summary>
+    public List<Request> Requests { get; }
+
+    /// <summary>
+    /// Initializes seed data collections.
+    /// </summary>
+    public DataSeed()
+    {
+        Estates = InitEstates();
+        Clients = InitClients();
+        Requests = InitRequests(Clients, Estates);
+    }
+
+    /// <summary>
+    /// Initializes a predefined list of real estate objects.
+    /// </summary>
+    private List<RealEstateObject> InitEstates() =>
         new()
         {
             new RealEstateObject { Id = 1, Type = RealEstateType.Apartment, Purpose = RealEstatePurpose.Residential, CadastralNumber="77:01:0001", Address="Moscow, Lenina St. 1", Floors=10, Area=50, Rooms=2, CeilingHeight=2.7, Floor=5 },
@@ -27,9 +49,9 @@ public static class DataSeed
         };
 
     /// <summary>
-    /// Returns a predefined list of counterparties (clients).
+    /// Initializes a predefined list of counterparties (clients).
     /// </summary>
-    public static List<Counterparty> GetClients() =>
+    private List<Counterparty> InitClients() =>
         new()
         {
             new Counterparty { Id = 1, FullName="Ivan Ivanov", PassportNumber="4500 123456", Phone="+7 999 111-22-33" },
@@ -45,9 +67,9 @@ public static class DataSeed
         };
 
     /// <summary>
-    /// Returns a predefined list of requests, linking clients with estates.
+    /// Initializes a predefined list of requests.
     /// </summary>
-    public static List<Request> GetRequests(List<Counterparty> clients, List<RealEstateObject> estates) =>
+    private List<Request> InitRequests(List<Counterparty> clients, List<RealEstateObject> estates) =>
         new()
         {
             new Request { Id = 1,  Counterparty=clients[0],  Estate=estates[0], Type=RequestType.Sell, Price=8_000_000, Date=new DateTime(2024,5,10) },

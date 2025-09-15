@@ -1,18 +1,24 @@
 ﻿using System.Data;
+using RealEstateAgencyApp.Tests.Seeds;
 
 namespace RealEstateAgencyApp.Tests;
 
-public class QueriesTests
+/// <summary>
+/// Contains unit tests for verifying queries on seeded real estate data.
+/// Uses DataSeed as a shared fixture to provide test data.
+/// </summary>
+public class QueriesTests : IClassFixture<DataSeed>
 {
-    private readonly List<Counterparty> _counterparties;
-    private readonly List<RealEstateObject> _objects;
-    private readonly List<Request> _requests;
+    private readonly DataSeed _testData;
 
-    public QueriesTests()
+    /// <summary>
+    /// Initializes a new instance of the QueriesTests class
+    /// with the provided DataSeed fixture.
+    /// </summary>
+    /// <param name="testData">The seeded data used for running queries in tests.</param>
+    public QueriesTests(DataSeed testData)
     {
-        _counterparties = DataSeed.GetClients();
-        _objects = DataSeed.GetEstates();
-        _requests = DataSeed.GetRequests(_counterparties, _objects);
+        _testData = testData;
     }
 
     /// <summary>
@@ -23,17 +29,16 @@ public class QueriesTests
     {
         var from = new DateTime(2024, 1, 1);
         var to = new DateTime(2024, 12, 31);
+        var expected = new[]{"Ivan Ivanov","Sergey Sidorov", "Elena Volkova","Maria Kuznetsova"};
 
-        var sellers = _requests
+        var sellers = _testData.Requests
             .Where(r => r.Type == RequestType.Sell && r.Date >= from && r.Date <= to)
             .Select(r => r.Counterparty!.FullName)
             .Distinct()
+            .Order()
             .ToList();
 
-        // expecting Id=1 (Ivanov), 3 (Sidorov), 5 (Volkova), 7 (Kuznetsova)
-        var expected = new[] { "Ivan Ivanov", "Sergey Sidorov", "Elena Volkova", "Maria Kuznetsova" };
-
-        Assert.Equal(expected.OrderBy(x => x), sellers.OrderBy(x => x));
+        Assert.Equal(expected, sellers);
     }
 
     /// <summary>
@@ -42,7 +47,10 @@ public class QueriesTests
     [Fact]
     public void GetTop5ClientsByRequests()
     {
-        var topBuyers = _requests
+        const int expectedTopCount = 5;
+        const int expectedRequestCountPerClient = 1;
+
+        var topBuyers = _testData.Requests
             .Where(r => r.Type == RequestType.Buy)
             .GroupBy(r => r.Counterparty)
             .Select(g => new { Client = g.Key!, Count = g.Count() })
@@ -50,7 +58,7 @@ public class QueriesTests
             .Take(5)
             .ToList();
 
-        var topSellers = _requests
+        var topSellers = _testData.Requests
             .Where(r => r.Type == RequestType.Sell)
             .GroupBy(r => r.Counterparty)
             .Select(g => new { Client = g.Key!, Count = g.Count() })
@@ -58,10 +66,10 @@ public class QueriesTests
             .Take(5)
             .ToList();
 
-        Assert.All(topBuyers, x => Assert.Equal(1, x.Count));
-        Assert.All(topSellers, x => Assert.Equal(1, x.Count));
-        Assert.Equal(5, topBuyers.Count); 
-        Assert.Equal(5, topSellers.Count);
+        Assert.All(topBuyers, x => Assert.Equal(expectedRequestCountPerClient, x.Count));
+        Assert.All(topSellers, x => Assert.Equal(expectedRequestCountPerClient, x.Count));
+        Assert.Equal(expectedTopCount, topBuyers.Count); 
+        Assert.Equal(expectedTopCount, topSellers.Count);
     }
 
     /// <summary>
@@ -70,16 +78,22 @@ public class QueriesTests
     [Fact]
     public void GetRequestCountByRealEstateType()
     {
-        var stats = _requests
+        const int expectedApartments = 3; // Id 1,6,9
+        const int expectedHouses = 2;     // Id 2,7
+        const int expectedOffices = 2;    // Id 3,8
+        const int expectedLands = 2;      // Id 4,10
+        const int expectedGarages = 1;    // Id 5
+
+        var stats = _testData.Requests
             .GroupBy(r => r.Estate!.Type)
             .Select(g => new { Type = g.Key, Count = g.Count() })
             .ToDictionary(x => x.Type, x => x.Count);
 
-        Assert.Equal(3, stats[RealEstateType.Apartment]); // Id 1,6,9
-        Assert.Equal(2, stats[RealEstateType.House]);     // Id 2,7
-        Assert.Equal(2, stats[RealEstateType.Office]);    // Id 3,8
-        Assert.Equal(2, stats[RealEstateType.Land]);      // Id 4,10
-        Assert.Equal(1, stats[RealEstateType.Garage]);    // Id 5
+        Assert.Equal(expectedApartments, stats[RealEstateType.Apartment]);
+        Assert.Equal(expectedHouses, stats[RealEstateType.House]);
+        Assert.Equal(expectedOffices, stats[RealEstateType.Office]);
+        Assert.Equal(expectedLands, stats[RealEstateType.Land]);
+        Assert.Equal(expectedGarages, stats[RealEstateType.Garage]);
     }
 
     /// <summary>
@@ -88,17 +102,19 @@ public class QueriesTests
     [Fact]
     public void GetClientsWithMinPriceRequests()
     {
-        var minPrice = _requests.Min(r => r.Price);
+        const int expectedMinPrice = 600_000;
+        var expectedClient = new[] { "Elena Volkova" };
 
-        var clients = _requests
+        var minPrice = _testData.Requests.Min(r => r.Price);
+
+        var clients = _testData.Requests
             .Where(r => r.Price == minPrice)
             .Select(r => r.Counterparty!.FullName)
             .Distinct()
             .ToList();
 
-        // minimal cost = 600 000 (request 5, client = Elena Volkova)
-        Assert.Single(clients);
-        Assert.Equal("Elena Volkova", clients[0]);
+        Assert.Equal(expectedMinPrice, minPrice);
+        Assert.Equal(expectedClient, clients);
     }
 
     /// <summary>
@@ -107,17 +123,16 @@ public class QueriesTests
     [Fact]
     public void GetClientsByEstateType()
     {
-        var type = RealEstateType.Apartment;
+        const RealEstateType targetType = RealEstateType.Apartment;
+        var expectedClients = new[] { "Dmitry Orlov" };
 
-        var clients = _requests
-            .Where(r => r.Type == RequestType.Buy && r.Estate!.Type == type)
+        var clients = _testData.Requests
+            .Where(r => r.Type == RequestType.Buy && r.Estate!.Type == targetType)
             .Select(r => r.Counterparty!.FullName)
             .Distinct()
-            .OrderBy(c => c)
+            .Order()
             .ToList();
 
-        // from seed: buying an apartment only from Dmitry Orlov (request 6)
-        Assert.Single(clients);
-        Assert.Equal("Dmitry Orlov", clients[0]);
+        Assert.Equal(expectedClients, clients);
     }
 }
