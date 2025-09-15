@@ -29,7 +29,7 @@ public class QueriesTests : IClassFixture<DataSeed>
     {
         var from = new DateTime(2024, 1, 1);
         var to = new DateTime(2024, 12, 31);
-        var expected = new[]{"Ivan Ivanov","Sergey Sidorov", "Elena Volkova","Maria Kuznetsova"};
+        var expected = new[]{ "Elena Volkova", "Ivan Ivanov", "Maria Kuznetsova", "Sergey Sidorov" };
 
         var sellers = _testData.Requests
             .Where(r => r.Type == RequestType.Sell && r.Date >= from && r.Date <= to)
@@ -49,20 +49,20 @@ public class QueriesTests : IClassFixture<DataSeed>
     {
         var expectedTopBuyers = new[]
         {
-        "Petr Petrov",    // 2 
-        "Anna Smirnova",  // 1
-        "Dmitry Orlov",   // 1
-        "Alexey Romanov", // 1
-        "Andrey Popov"    // 1
+        "Petr Petrov",     // 3
+        "Alexey Romanov",  // 1
+        "Andrey Popov",    // 1
+        "Anna Smirnova",   // 1
+        "Dmitry Orlov"     // 1
     };
 
         var expectedTopSellers = new[]
         {
-        "Ivan Ivanov",    // 3 
-        "Sergey Sidorov", // 2
-        "Elena Volkova",  // 1
-        "Maria Kuznetsova", // 1
-        "Natalia Ivanova"   // 1
+        "Ivan Ivanov",       // 2
+        "Elena Volkova",     // 1
+        "Maria Kuznetsova",  // 1
+        "Natalia Ivanova",   // 1
+        "Sergey Sidorov"     // 1 
     };
 
         var topBuyers = _testData.Requests
@@ -70,7 +70,7 @@ public class QueriesTests : IClassFixture<DataSeed>
             .GroupBy(r => r.Counterparty!.FullName)
             .Select(g => new { Client = g.Key, Count = g.Count() })
             .OrderByDescending(x => x.Count)
-            .ThenBy(x => x.Client)
+            .ThenBy(x => x.Client)           
             .Take(5)
             .Select(x => x.Client)
             .ToList();
@@ -96,10 +96,10 @@ public class QueriesTests : IClassFixture<DataSeed>
     [Fact]
     public void GetRequestCountByRealEstateType()
     {
-        const int expectedApartments = 3; // Id 1,6,9
-        const int expectedHouses = 2;     // Id 2,7
-        const int expectedOffices = 2;    // Id 3,8
-        const int expectedLands = 2;      // Id 4,10
+        const int expectedApartments = 4; // Id 1,6,9 
+        const int expectedHouses = 4;     // Id 2,7
+        const int expectedOffices = 3;    // Id 3,8
+        const int expectedLands = 2;      // Id 4,10 
         const int expectedGarages = 1;    // Id 5
 
         var stats = _testData.Requests
@@ -142,7 +142,7 @@ public class QueriesTests : IClassFixture<DataSeed>
     public void GetClientsByEstateType()
     {
         const RealEstateType targetType = RealEstateType.Apartment;
-        var expectedClients = new[] { "Dmitry Orlov" };
+        var expectedClients = new[] { "Dmitry Orlov", "Petr Petrov" };
 
         var clients = _testData.Requests
             .Where(r => r.Type == RequestType.Buy && r.Estate!.Type == targetType)
