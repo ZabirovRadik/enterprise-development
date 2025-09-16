@@ -7,19 +7,14 @@ namespace RealEstateAgencyApp.Tests;
 /// Contains unit tests for verifying queries on seeded real estate data.
 /// Uses DataSeed as a shared fixture to provide test data.
 /// </summary>
-public class QueriesTests : IClassFixture<DataSeed>
+/// <remarks>
+/// Initializes a new instance of the QueriesTests class
+/// with the provided DataSeed fixture.
+/// </remarks>
+/// <param name="testData">The seeded data used for running queries in tests.</param>
+public class QueriesTests(DataSeed testData) : IClassFixture<DataSeed>
 {
-    private readonly DataSeed _testData;
-
-    /// <summary>
-    /// Initializes a new instance of the QueriesTests class
-    /// with the provided DataSeed fixture.
-    /// </summary>
-    /// <param name="testData">The seeded data used for running queries in tests.</param>
-    public QueriesTests(DataSeed testData)
-    {
-        _testData = testData;
-    }
+    private readonly DataSeed _testData = testData;
 
     /// <summary>
     /// Get all sellers who submitted requests in a given date range.
