@@ -1,39 +1,37 @@
-﻿using RealEstateAgencyApp.Domain.Entities.Enums;
-
-namespace RealEstateAgencyApp.Domain.Entities;
+namespace RealEstateAgencyApp.Application.Dtos.RequestDtos;
 
 /// <summary>
-/// Represents a request for buying or selling real estate.
+/// Represents a DTO for retrieving request information.
 /// </summary>
-public class Request
+public class RequestGetDto
 {
     /// <summary>
-    /// Gets or sets the unique identifier of the request.
+    /// Unique identifier of the request.
     /// </summary>
     public required int Id { get; set; }
 
     /// <summary>
-    /// Gets or sets the counterparty making the request.
+    /// ID of the counterparty making the request.
     /// </summary>
     public required int CounterpartyID { get; set; }
 
     /// <summary>
-    /// Gets or sets the real estate object related to the request.
+    /// ID of the real estate object related to the request.
     /// </summary>
     public required int EstateID { get; set; }
 
     /// <summary>
-    /// Gets or sets the type of the request (buy or sell).
+    /// Type of the request (buy or sell).
     /// </summary>
     public required RequestType Type { get; set; }
 
     /// <summary>
-    /// Gets or sets the price proposed in the request.
+    /// Price proposed in the request.
     /// </summary>
     public required decimal Price { get; set; }
 
     /// <summary>
-    /// Gets or sets the date when the request was created.
+    /// Date when the request was created.
     /// </summary>
     public required DateTime Date { get; set; }
 }

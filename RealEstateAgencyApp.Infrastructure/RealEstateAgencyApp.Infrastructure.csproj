@@ -22,5 +22,9 @@
   <ItemGroup>
     <ProjectReference Include="..\RealEstateAgencyApp.Domain\RealEstateAgencyApp.Domain.csproj" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\RealEstateAgencyApp.Application\RealEstateAgencyApp.Application.csproj" />
+  </ItemGroup>
 
 </Project>

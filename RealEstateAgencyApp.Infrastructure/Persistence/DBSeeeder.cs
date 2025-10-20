@@ -1,14 +1,20 @@
-using Microsoft.EntityFrameworkCore;
+п»їusing Microsoft.EntityFrameworkCore;
 using RealEstateAgencyApp.Domain.DataSeeders;
 
 namespace RealEstateAgencyApp.Infrastructure.Persistence;
 
 /// <summary>
-/// Seeds the database with initial data for real estate objects, counterparties, and requests.
-/// Works with MySQL.
+/// Provides methods for seeding the database with initial test data.
+/// Contains separate methods for seeding each entity type and a combined method for all data.
 /// </summary>
 public static class DbSeeder
 {
+    /// <summary>
+    /// Seeds the database with real estate objects if the table is empty.
+    /// Also resets the auto-increment counter to continue from the next available ID.
+    /// </summary>
+    /// <param name="context">The database context to seed data into.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     public static async Task SeedEstatesAsync(AppDbContext context)
     {
         if (!context.RealEstateObjects.Any())
@@ -24,6 +30,12 @@ public static class DbSeeder
         );
     }
 
+    /// <summary>
+    /// Seeds the database with counterparties if the table is empty.
+    /// Also resets the auto-increment counter to continue from the next available ID.
+    /// </summary>
+    /// <param name="context">The database context to seed data into.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     public static async Task SeedCounterpartiesAsync(AppDbContext context)
     {
         if (!context.Counterparties.Any())
@@ -39,6 +51,13 @@ public static class DbSeeder
         );
     }
 
+    /// <summary>
+    /// Seeds the database with requests if the table is empty.
+    /// Also resets the auto-increment counter to continue from the next available ID.
+    /// Requires that counterparties and real estate objects are seeded first.
+    /// </summary>
+    /// <param name="context">The database context to seed data into.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     public static async Task SeedRequestsAsync(AppDbContext context)
     {
         if (!context.Requests.Any())
@@ -55,8 +74,11 @@ public static class DbSeeder
     }
 
     /// <summary>
-    /// Выполняет все сиды в правильном порядке (Counterparties -> Estates -> Requests)
+    /// Performs complete database seeding in the correct order to maintain referential integrity.
+    /// Order: Counterparties в†’ RealEstateObjects в†’ Requests.
     /// </summary>
+    /// <param name="context">The database context to seed data into.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     public static async Task SeedAllAsync(AppDbContext context)
     {
         await SeedCounterpartiesAsync(context);
