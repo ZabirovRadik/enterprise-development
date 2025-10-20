@@ -1,3 +1,5 @@
+using RealEstateAgencyApp.Domain.Entities.Enums;
+
 namespace RealEstateAgencyApp.Application.Dtos.RequestDtos;
 
 /// <summary>

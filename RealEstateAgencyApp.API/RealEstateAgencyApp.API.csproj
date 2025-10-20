@@ -7,19 +7,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="13.0.1" />
-    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0">
+    <PackageReference Include="AutoMapper" Version="14.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.10.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0-preview.2.efcore.9.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Application\RealEstateAgencyApp.Application.csproj" />
-    <ProjectReference Include="..\Infrastructure\RealEstateAgencyApp.Infrastructure.csproj" />
+    <ProjectReference Include="..\RealEstateAgencyApp.Application\RealEstateAgencyApp.Application.csproj" />
+    <ProjectReference Include="..\RealEstateAgencyApp.Infrastructure\RealEstateAgencyApp.Infrastructure.csproj" />
+    <ProjectReference Include="..\RealEstateAgencyApp.ServiceDefaults\RealEstateAgencyApp.ServiceDefaults.csproj" />
   </ItemGroup>
 
 </Project>

@@ -10,7 +10,7 @@ namespace RealEstateAgencyApp.Infrastructure.Repositories;
 /// Provides CRUD methods for counterparties.
 /// </summary>
 /// <param name="context">The application's database context used for data access.</param>
-public class CounterpartyRepository(AppDbContext context) : ICounterpartyRepository
+public class CounterpartyRepository(DBContext context) : ICounterpartyRepository
 {
     /// <summary>
     /// Gets all counterparties.

@@ -15,7 +15,7 @@ public static class DbSeeder
     /// </summary>
     /// <param name="context">The database context to seed data into.</param>
     /// <returns>A task that represents the asynchronous operation.</returns>
-    public static async Task SeedEstatesAsync(AppDbContext context)
+    public static async Task SeedEstatesAsync(DBContext context)
     {
         if (!context.RealEstateObjects.Any())
         {
@@ -36,7 +36,7 @@ public static class DbSeeder
     /// </summary>
     /// <param name="context">The database context to seed data into.</param>
     /// <returns>A task that represents the asynchronous operation.</returns>
-    public static async Task SeedCounterpartiesAsync(AppDbContext context)
+    public static async Task SeedCounterpartiesAsync(DBContext context)
     {
         if (!context.Counterparties.Any())
         {
@@ -58,7 +58,7 @@ public static class DbSeeder
     /// </summary>
     /// <param name="context">The database context to seed data into.</param>
     /// <returns>A task that represents the asynchronous operation.</returns>
-    public static async Task SeedRequestsAsync(AppDbContext context)
+    public static async Task SeedRequestsAsync(DBContext context)
     {
         if (!context.Requests.Any())
         {
@@ -79,7 +79,7 @@ public static class DbSeeder
     /// </summary>
     /// <param name="context">The database context to seed data into.</param>
     /// <returns>A task that represents the asynchronous operation.</returns>
-    public static async Task SeedAllAsync(AppDbContext context)
+    public static async Task SeedAllAsync(DBContext context)
     {
         await SeedCounterpartiesAsync(context);
         await SeedEstatesAsync(context);

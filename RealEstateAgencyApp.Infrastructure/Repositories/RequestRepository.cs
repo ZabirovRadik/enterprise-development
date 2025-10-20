@@ -11,7 +11,7 @@ namespace RealEstateAgencyApp.Infrastructure.Repositories;
 /// Provides CRUD methods for requests.
 /// </summary>
 /// <param name="context">The application's database context used for data access.</param>
-public class RequestRepository(AppDbContext context) : IRequestRepository
+public class RequestRepository(DBContext context) : IRequestRepository
 {
     /// <summary>
     /// Gets all requests.

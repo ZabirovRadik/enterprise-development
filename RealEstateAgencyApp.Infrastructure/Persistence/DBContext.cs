@@ -1,7 +1,5 @@
-// RealEstateAgencyApp.Infrastructure/Persistence/AppDbContext.cs
 using Microsoft.EntityFrameworkCore;
 using RealEstateAgencyApp.Domain.Entities;
-using RealEstateAgencyApp.Domain.Entities.Enums;
 
 namespace RealEstateAgencyApp.Infrastructure.Persistence;
 
@@ -9,7 +7,7 @@ namespace RealEstateAgencyApp.Infrastructure.Persistence;
 /// EF Core database context for the real estate agency application.
 /// </summary>
 /// <param name="options">The options for this context.</param>
-public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
+public class DBContext(DbContextOptions<DBContext> options) : DbContext(options)
 {
     /// <summary>
     /// DbSet of real estate objects in the agency.
@@ -17,7 +15,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<RealEstateObject> RealEstateObjects { get; set; }
 
     /// <summary>
-    /// DbSet of counterparties (clients) in the agency.
+    /// DbSet of counterparties (clients) in the the agency.
     /// </summary>
     public DbSet<Counterparty> Counterparties { get; set; }
 
@@ -100,13 +98,15 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                 .HasColumnType("decimal(18,2)");
             b.Property(b => b.Date)
                 .IsRequired();
-            b.HasOne(r => r.Counterparty)
+
+            b.HasOne<Counterparty>()
                 .WithMany()
-                .HasForeignKey("CounterpartyId")
+                .HasForeignKey(r => r.CounterpartyID)
                 .OnDelete(DeleteBehavior.Cascade);
-            b.HasOne(r => r.Estate)
+
+            b.HasOne<RealEstateObject>()
                 .WithMany()
-                .HasForeignKey("RealEstateObjectId")
+                .HasForeignKey(r => r.EstateID)
                 .OnDelete(DeleteBehavior.Cascade);
         });
     }

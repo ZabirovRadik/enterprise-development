@@ -1,15 +1,37 @@
+using Microsoft.EntityFrameworkCore;
+using RealEstateAgencyApp.Application.Mappers;
+using RealEstateAgencyApp.Application.Services;
+using RealEstateAgencyApp.Domain.Interfaces;
+using RealEstateAgencyApp.Infrastructure.Persistence;
+using RealEstateAgencyApp.Infrastructure.Repositories;
+using RealEstateAgencyApp.ServiceDefaults;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.AddServiceDefaults();
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddDbContext<DBContext>(options =>
+{
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+});
+
+builder.Services.AddScoped<ICounterpartyRepository, CounterpartyRepository>();
+builder.Services.AddScoped<IRealEstateObjectRepository, RealEstateObjectRepository>();
+builder.Services.AddScoped<IRequestRepository, RequestRepository>();
+
+builder.Services.AddScoped<AnalyticsService>();
+
+builder.Services.AddAutoMapper(typeof(AppMappingProfile));
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.MapDefaultEndpoints();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -17,9 +39,16 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<DBContext>();
+
+    context.Database.EnsureCreated();
+
+    await DbSeeder.SeedAllAsync(context);
+}
 
 app.Run();
