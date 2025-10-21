@@ -1,6 +1,6 @@
 ﻿var builder = DistributedApplication.CreateBuilder(args);
 
-var mysql = builder.AddMySql("mysql").WithDataVolume();
+var mysql = builder.AddMySql("mysql").WithDataVolume().WithEnvironment("MYSQL_ROOT_HOST", "%");
 
 var mysqlDb = mysql.AddDatabase("mysqldb");
 

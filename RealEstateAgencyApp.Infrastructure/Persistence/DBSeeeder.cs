@@ -24,9 +24,9 @@ public static class DbSeeder
             await context.SaveChangesAsync();
         }
 
+        var next = (await context.RealEstateObjects.MaxAsync(e => (int?)e.Id) ?? 0) + 1;
         await context.Database.ExecuteSqlRawAsync(
-            @"ALTER TABLE `RealEstateObjects` AUTO_INCREMENT = 
-              (SELECT COALESCE(MAX(`Id`), 0) + 1 FROM `RealEstateObjects`);"
+            $"ALTER TABLE `RealEstateObjects` AUTO_INCREMENT = {next};"
         );
     }
 
@@ -45,9 +45,9 @@ public static class DbSeeder
             await context.SaveChangesAsync();
         }
 
+        var next = (await context.Counterparties.MaxAsync(c => (int?)c.Id) ?? 0) + 1;
         await context.Database.ExecuteSqlRawAsync(
-            @"ALTER TABLE `Counterparties` AUTO_INCREMENT = 
-              (SELECT COALESCE(MAX(`Id`), 0) + 1 FROM `Counterparties`);"
+            $"ALTER TABLE `Counterparties` AUTO_INCREMENT = {next};"
         );
     }
 
@@ -67,9 +67,9 @@ public static class DbSeeder
             await context.SaveChangesAsync();
         }
 
+        var next = (await context.Requests.MaxAsync(r => (int?)r.Id) ?? 0) + 1;
         await context.Database.ExecuteSqlRawAsync(
-            @"ALTER TABLE `Requests` AUTO_INCREMENT = 
-              (SELECT COALESCE(MAX(`Id`), 0) + 1 FROM `Requests`);"
+            $"ALTER TABLE `Requests` AUTO_INCREMENT = {next};"
         );
     }
 
