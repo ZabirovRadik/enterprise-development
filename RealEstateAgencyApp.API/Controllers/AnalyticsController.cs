@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using RealEstateAgencyApp.Application.Services;
 using RealEstateAgencyApp.Application.Dtos.AnalyticsDtos;
+using RealEstateAgencyApp.Application.Services;
 
 namespace RealEstateAgencyApp.API.Controllers;
 

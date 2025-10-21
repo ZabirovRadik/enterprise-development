@@ -1,6 +1,4 @@
-﻿using Aspire.Hosting;
-
-var builder = DistributedApplication.CreateBuilder(args);
+﻿var builder = DistributedApplication.CreateBuilder(args);
 
 var mysql = builder.AddMySql("mysql");
 

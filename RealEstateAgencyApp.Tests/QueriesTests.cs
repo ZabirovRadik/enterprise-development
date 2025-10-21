@@ -1,5 +1,5 @@
-﻿using System.Data;
-using RealEstateAgencyApp.Domain.DataSeeders;
+﻿using RealEstateAgencyApp.Domain.DataSeeders;
+using System.Data;
 
 /// <summary>
 /// Contains unit tests for verifying queries on seeded real estate data.
@@ -61,7 +61,8 @@ public class QueriesTests(DataSeeder testData) : IClassFixture<DataSeeder>
         var topBuyers = _testData.Requests
             .Where(r => r.Type == RequestType.Buy)
             .GroupBy(r => r.CounterpartyID)  // ← ИСПРАВЛЕНО
-            .Select(g => new {
+            .Select(g => new
+            {
                 Client = GetCounterpartyById(g.Key)!.FullName,  // ← ИСПРАВЛЕНО
                 Count = g.Count()
             })
@@ -74,7 +75,8 @@ public class QueriesTests(DataSeeder testData) : IClassFixture<DataSeeder>
         var topSellers = _testData.Requests
             .Where(r => r.Type == RequestType.Sell)
             .GroupBy(r => r.CounterpartyID)  // ← ИСПРАВЛЕНО
-            .Select(g => new {
+            .Select(g => new
+            {
                 Client = GetCounterpartyById(g.Key)!.FullName,  // ← ИСПРАВЛЕНО
                 Count = g.Count()
             })
