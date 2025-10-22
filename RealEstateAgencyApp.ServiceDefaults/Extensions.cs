@@ -9,8 +9,17 @@ using OpenTelemetry.Trace;
 
 namespace RealEstateAgencyApp.ServiceDefaults;
 
+/// <summary>
+/// Provides extension methods for configuring default services and middleware for the application.
+/// </summary>
 public static class Extensions
 {
+    /// <summary>
+    /// Adds default services to the application including OpenTelemetry, health checks, and service discovery.
+    /// </summary>
+    /// <typeparam name="TBuilder">The type of the host application builder.</typeparam>
+    /// <param name="builder">The host application builder.</param>
+    /// <returns>The host application builder with default services configured.</returns>
     public static TBuilder AddServiceDefaults<TBuilder>(this TBuilder builder) where TBuilder : IHostApplicationBuilder
     {
         builder.ConfigureOpenTelemetry();
@@ -26,6 +35,12 @@ public static class Extensions
         return builder;
     }
 
+    /// <summary>
+    /// Configures OpenTelemetry for logging, metrics, and tracing.
+    /// </summary>
+    /// <typeparam name="TBuilder">The type of the host application builder.</typeparam>
+    /// <param name="builder">The host application builder.</param>
+    /// <returns>The host application builder with OpenTelemetry configured.</returns>
     public static TBuilder ConfigureOpenTelemetry<TBuilder>(this TBuilder builder) where TBuilder : IHostApplicationBuilder
     {
         builder.Logging.AddOpenTelemetry(logging =>
@@ -50,6 +65,12 @@ public static class Extensions
         return builder;
     }
 
+    /// <summary>
+    /// Adds default health checks to the application.
+    /// </summary>
+    /// <typeparam name="TBuilder">The type of the host application builder.</typeparam>
+    /// <param name="builder">The host application builder.</param>
+    /// <returns>The host application builder with health checks configured.</returns>
     public static TBuilder AddDefaultHealthChecks<TBuilder>(this TBuilder builder) where TBuilder : IHostApplicationBuilder
     {
         builder.Services.AddHealthChecks()
@@ -58,6 +79,11 @@ public static class Extensions
         return builder;
     }
 
+    /// <summary>
+    /// Maps default endpoints for health checks in development environment.
+    /// </summary>
+    /// <param name="app">The web application.</param>
+    /// <returns>The web application with default endpoints mapped.</returns>
     public static WebApplication MapDefaultEndpoints(this WebApplication app)
     {
         if (app.Environment.IsDevelopment())
