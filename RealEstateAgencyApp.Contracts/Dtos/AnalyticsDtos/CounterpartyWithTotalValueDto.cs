@@ -1,4 +1,4 @@
-namespace RealEstateAgencyApp.Application.Dtos.AnalyticsDtos;
+namespace RealEstateAgencyApp.Contracts.Dtos.AnalyticsDtos;
 
 /// <summary>
 /// Represents a DTO for a counterparty with the total value of their requests.

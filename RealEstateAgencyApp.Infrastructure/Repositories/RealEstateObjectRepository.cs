@@ -11,7 +11,7 @@ namespace RealEstateAgencyApp.Infrastructure.Repositories;
 /// Provides CRUD methods for real estate objects.
 /// </summary>
 /// <param name="context">The application's database context used for data access.</param>
-public class RealEstateObjectRepository(DBContext context) : IRealEstateObjectRepository
+public class RealEstateObjectRepository(AppDbContext context) : IRealEstateObjectRepository
 {
     /// <summary>
     /// Gets all real estate objects.

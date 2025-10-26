@@ -7,7 +7,7 @@ namespace RealEstateAgencyApp.Infrastructure.Persistence;
 /// EF Core database context for the real estate agency application.
 /// </summary>
 /// <param name="options">The options for this context.</param>
-public class DBContext(DbContextOptions<DBContext> options) : DbContext(options)
+public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
     /// <summary>
     /// DbSet of real estate objects in the agency.
@@ -99,14 +99,12 @@ public class DBContext(DbContextOptions<DBContext> options) : DbContext(options)
             b.Property(b => b.Date)
                 .IsRequired();
 
-            b.HasOne<Counterparty>()
-                .WithMany()
-                .HasForeignKey(r => r.CounterpartyID)
+            b.HasOne(r => r.Counterparty)
+                .WithMany(c => c.Requests)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            b.HasOne<RealEstateObject>()
-                .WithMany()
-                .HasForeignKey(r => r.EstateID)
+            b.HasOne(r => r.Estate)
+                .WithMany(e => e.Requests)
                 .OnDelete(DeleteBehavior.Cascade);
         });
     }

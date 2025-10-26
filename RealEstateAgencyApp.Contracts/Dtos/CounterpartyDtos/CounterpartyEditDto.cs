@@ -1,15 +1,10 @@
-namespace RealEstateAgencyApp.Application.Dtos.CounterpartyDtos;
+namespace RealEstateAgencyApp.Contracts.Dtos.CounterpartyDtos;
 
 /// <summary>
-/// Represents a DTO for retrieving counterparty information.
+/// Represents a DTO for creating or updating a counterparty.
 /// </summary>
-public class CounterpartyGetDto
+public class CounterpartyEditDto
 {
-    /// <summary>
-    /// Unique identifier of the counterparty.
-    /// </summary>
-    public required int Id { get; set; }
-
     /// <summary>
     /// Full name of the counterparty.
     /// </summary>

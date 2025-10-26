@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RealEstateAgencyApp.Domain"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RealEstateAgencyApp.Tests", "RealEstateAgencyApp.Tests\RealEstateAgencyApp.Tests.csproj", "{7514D71A-C148-4A73-BE6F-489D7E2E9274}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RealEstateAgencyApp.API", "RealEstateAgencyApp.API\RealEstateAgencyApp.API.csproj", "{C492026B-79CB-49BA-8C8E-08CF55BF1516}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RealEstateAgencyApp.Api", "RealEstateAgencyApp.API\RealEstateAgencyApp.Api.csproj", "{C492026B-79CB-49BA-8C8E-08CF55BF1516}"
 	ProjectSection(ProjectDependencies) = postProject
 		{E6851F2F-AA1A-7C05-DCDE-1385FB985C2E} = {E6851F2F-AA1A-7C05-DCDE-1385FB985C2E}
 	EndProjectSection
@@ -22,6 +22,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RealEstateAgencyApp.AppHost", "RealEstateAgencyApp.AppHost\RealEstateAgencyApp.AppHost.csproj", "{4E1DBCC7-3B18-41B2-8655-52E910658D4A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RealEstateAgencyApp.ServiceDefaults", "RealEstateAgencyApp.ServiceDefaults\RealEstateAgencyApp.ServiceDefaults.csproj", "{5ACC7110-3E47-4F94-BB49-289F6466FEF2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RealEstateAgencyApp.Contracts", "RealEstateAgencyApp.Contracts\RealEstateAgencyApp.Contracts.csproj", "{4EB012DE-5345-4949-9CCC-FC6F2D5BC445}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -117,6 +119,18 @@ Global
 		{5ACC7110-3E47-4F94-BB49-289F6466FEF2}.Release|x64.Build.0 = Release|Any CPU
 		{5ACC7110-3E47-4F94-BB49-289F6466FEF2}.Release|x86.ActiveCfg = Release|Any CPU
 		{5ACC7110-3E47-4F94-BB49-289F6466FEF2}.Release|x86.Build.0 = Release|Any CPU
+		{4EB012DE-5345-4949-9CCC-FC6F2D5BC445}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4EB012DE-5345-4949-9CCC-FC6F2D5BC445}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4EB012DE-5345-4949-9CCC-FC6F2D5BC445}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4EB012DE-5345-4949-9CCC-FC6F2D5BC445}.Debug|x64.Build.0 = Debug|Any CPU
+		{4EB012DE-5345-4949-9CCC-FC6F2D5BC445}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4EB012DE-5345-4949-9CCC-FC6F2D5BC445}.Debug|x86.Build.0 = Debug|Any CPU
+		{4EB012DE-5345-4949-9CCC-FC6F2D5BC445}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4EB012DE-5345-4949-9CCC-FC6F2D5BC445}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4EB012DE-5345-4949-9CCC-FC6F2D5BC445}.Release|x64.ActiveCfg = Release|Any CPU
+		{4EB012DE-5345-4949-9CCC-FC6F2D5BC445}.Release|x64.Build.0 = Release|Any CPU
+		{4EB012DE-5345-4949-9CCC-FC6F2D5BC445}.Release|x86.ActiveCfg = Release|Any CPU
+		{4EB012DE-5345-4949-9CCC-FC6F2D5BC445}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

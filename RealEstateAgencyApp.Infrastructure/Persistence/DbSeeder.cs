@@ -15,9 +15,9 @@ public static class DbSeeder
     /// </summary>
     /// <param name="context">The database context to seed data into.</param>
     /// <returns>A task that represents the asynchronous operation.</returns>
-    public static async Task SeedEstatesAsync(DBContext context)
+    public static async Task SeedEstatesAsync(AppDbContext context)
     {
-        if (!context.RealEstateObjects.Any())
+        if (!await context.RealEstateObjects.AnyAsync())
         {
             var dataSeeder = new DataSeeder();
             context.RealEstateObjects.AddRange(dataSeeder.Estates);
@@ -25,7 +25,7 @@ public static class DbSeeder
         }
 
         var next = (await context.RealEstateObjects.MaxAsync(e => (int?)e.Id) ?? 0) + 1;
-        await context.Database.ExecuteSqlRawAsync(
+        await context.Database.ExecuteSqlAsync(
             $"ALTER TABLE `RealEstateObjects` AUTO_INCREMENT = {next};"
         );
     }
@@ -36,17 +36,17 @@ public static class DbSeeder
     /// </summary>
     /// <param name="context">The database context to seed data into.</param>
     /// <returns>A task that represents the asynchronous operation.</returns>
-    public static async Task SeedCounterpartiesAsync(DBContext context)
+    public static async Task SeedCounterpartiesAsync(AppDbContext context)
     {
-        if (!context.Counterparties.Any())
+        if (!await context.Counterparties.AnyAsync())
         {
             var dataSeeder = new DataSeeder();
-            context.Counterparties.AddRange(dataSeeder.Counterpaties);
+            context.Counterparties.AddRange(dataSeeder.Counterparties);
             await context.SaveChangesAsync();
         }
 
         var next = (await context.Counterparties.MaxAsync(c => (int?)c.Id) ?? 0) + 1;
-        await context.Database.ExecuteSqlRawAsync(
+        await context.Database.ExecuteSqlAsync(
             $"ALTER TABLE `Counterparties` AUTO_INCREMENT = {next};"
         );
     }
@@ -58,9 +58,9 @@ public static class DbSeeder
     /// </summary>
     /// <param name="context">The database context to seed data into.</param>
     /// <returns>A task that represents the asynchronous operation.</returns>
-    public static async Task SeedRequestsAsync(DBContext context)
+    public static async Task SeedRequestsAsync(AppDbContext context)
     {
-        if (!context.Requests.Any())
+        if (!await context.Requests.AnyAsync())
         {
             var dataSeeder = new DataSeeder();
             context.Requests.AddRange(dataSeeder.Requests);
@@ -68,7 +68,7 @@ public static class DbSeeder
         }
 
         var next = (await context.Requests.MaxAsync(r => (int?)r.Id) ?? 0) + 1;
-        await context.Database.ExecuteSqlRawAsync(
+        await context.Database.ExecuteSqlAsync(
             $"ALTER TABLE `Requests` AUTO_INCREMENT = {next};"
         );
     }
@@ -79,7 +79,7 @@ public static class DbSeeder
     /// </summary>
     /// <param name="context">The database context to seed data into.</param>
     /// <returns>A task that represents the asynchronous operation.</returns>
-    public static async Task SeedAllAsync(DBContext context)
+    public static async Task SeedAllAsync(AppDbContext context)
     {
         await SeedCounterpartiesAsync(context);
         await SeedEstatesAsync(context);

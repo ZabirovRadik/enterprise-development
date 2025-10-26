@@ -61,4 +61,9 @@ public class RealEstateObject
     /// Gets or sets a value indicating whether the property has any legal encumbrances.
     /// </summary>
     public bool? HasEncumbrances { get; set; }
+
+    /// <summary>
+    /// Gets or sets the collection of requests for this real estate object.
+    /// </summary>
+    public ICollection<Request> Requests { get; set; } = new List<Request>();
 }

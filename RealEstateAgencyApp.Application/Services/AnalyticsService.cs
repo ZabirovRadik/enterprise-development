@@ -1,5 +1,6 @@
 using AutoMapper;
-using RealEstateAgencyApp.Application.Dtos.AnalyticsDtos;
+using RealEstateAgencyApp.Contracts.Dtos.AnalyticsDtos;
+using RealEstateAgencyApp.Contracts.Interfaces;
 using RealEstateAgencyApp.Domain.Interfaces;
 
 namespace RealEstateAgencyApp.Application.Services;
@@ -8,15 +9,13 @@ namespace RealEstateAgencyApp.Application.Services;
 /// Provides analytics operations related to real estate objects, counterparties, and requests.
 /// </summary>
 /// <param name="requestRepository">Repository for accessing requests.</param>
-/// <param name="counterpartyRepository">Repository for accessing counterparties.</param>
 /// <param name="realEstateRepository">Repository for accessing real estate objects.</param>
 /// <param name="mapper">Mapper for DTOs.</param>
 public class AnalyticsService(
     IRequestRepository requestRepository,
-    ICounterpartyRepository counterpartyRepository,
     IRealEstateObjectRepository realEstateRepository,
     IMapper mapper
-)
+) : IAnalyticsService
 {
     /// <summary>
     /// Returns the top counterparties by total request value.
@@ -26,13 +25,12 @@ public class AnalyticsService(
     public async Task<List<CounterpartyWithTotalValueDto>> GetTopCounterpartiesByValueAsync(int topCount = 10)
     {
         var requests = await requestRepository.GetAllAsync();
-        var counterparties = await counterpartyRepository.GetAllAsync();
 
         var topCounterparties = requests
-            .GroupBy(r => r.CounterpartyID)
+            .GroupBy(r => r.Counterparty.Id)
             .Select(g =>
             {
-                var counterparty = counterparties.First(c => c.Id == g.Key);
+                var counterparty = g.First().Counterparty;
                 var dto = mapper.Map<CounterpartyWithTotalValueDto>(counterparty);
                 dto.TotalValue = g.Sum(r => r.Price);
                 return dto;
@@ -52,13 +50,12 @@ public class AnalyticsService(
     public async Task<List<RealEstateWithRequestCountDto>> GetMostPopularEstatesAsync(int topCount = 10)
     {
         var requests = await requestRepository.GetAllAsync();
-        var estates = await realEstateRepository.GetAllAsync();
 
         var popularEstates = requests
-            .GroupBy(r => r.EstateID)
+            .GroupBy(r => r.Estate.Id)
             .Select(g =>
             {
-                var estate = estates.First(e => e.Id == g.Key);
+                var estate = g.First().Estate;
                 var dto = mapper.Map<RealEstateWithRequestCountDto>(estate);
                 dto.RequestCount = g.Count();
                 return dto;
@@ -77,20 +74,15 @@ public class AnalyticsService(
     public async Task<List<PriceStatsByTypeDto>> GetPriceStatisticsByTypeAsync()
     {
         var requests = await requestRepository.GetAllAsync();
-        var estates = await realEstateRepository.GetAllAsync();
 
         var statsByType = requests
-            .Join(estates,
-                r => r.EstateID,
-                e => e.Id,
-                (r, e) => new { Request = r, Estate = e })
-            .GroupBy(x => x.Estate.Type)
+            .GroupBy(r => r.Estate.Type)
             .Select(g => new PriceStatsByTypeDto
             {
                 Type = g.Key,
-                AveragePrice = g.Average(x => x.Request.Price),
-                MaxPrice = g.Max(x => x.Request.Price),
-                MinPrice = g.Min(x => x.Request.Price),
+                AveragePrice = g.Average(r => r.Price),
+                MaxPrice = g.Max(r => r.Price),
+                MinPrice = g.Min(r => r.Price),
                 RequestCount = g.Count()
             })
             .OrderByDescending(s => s.RequestCount)
@@ -135,15 +127,16 @@ public class AnalyticsService(
         var requests = await requestRepository.GetAllAsync();
         var estates = await realEstateRepository.GetAllAsync();
 
-        var encumberedEstates = estates
-            .Where(e => e.HasEncumbrances == true)
-            .Select(e =>
+        var encumberedEstates = requests
+            .Where(r => r.Estate.HasEncumbrances == true)
+            .GroupBy(r => r.Estate.Id)
+            .Select(g =>
             {
-                var dto = mapper.Map<RealEstateWithRequestCountDto>(e);
-                dto.RequestCount = requests.Count(r => r.EstateID == e.Id);
+                var estate = g.First().Estate;
+                var dto = mapper.Map<RealEstateWithRequestCountDto>(estate);
+                dto.RequestCount = g.Count();
                 return dto;
             })
-            .Where(e => e.RequestCount > 0)
             .OrderByDescending(e => e.RequestCount)
             .ToList();
 

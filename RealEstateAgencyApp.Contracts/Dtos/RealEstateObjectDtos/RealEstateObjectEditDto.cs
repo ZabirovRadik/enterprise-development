@@ -1,17 +1,12 @@
 using RealEstateAgencyApp.Domain.Entities.Enums;
 
-namespace RealEstateAgencyApp.Application.Dtos.RealEstateObjectDtos;
+namespace RealEstateAgencyApp.Contracts.Dtos.RealEstateObjectDtos;
 
 /// <summary>
-/// Represents a DTO for retrieving real estate object information.
+/// Represents a DTO for creating or updating a real estate object.
 /// </summary>
-public class RealEstateObjectGetDto
+public class RealEstateObjectEditDto
 {
-    /// <summary>
-    /// Unique identifier of the real estate object.
-    /// </summary>
-    public required int Id { get; set; }
-
     /// <summary>
     /// Type of the real estate object.
     /// </summary>

@@ -4,7 +4,7 @@ var mysql = builder.AddMySql("mysql");
 
 var mysqlDb = mysql.AddDatabase("mysqldb");
 
-var api = builder.AddProject<Projects.RealEstateAgencyApp_API>("realestate-api")
+builder.AddProject<Projects.RealEstateAgencyApp_API>("realestate-api")
                  .WithReference(mysqlDb, "mysqldb")
                  .WaitFor(mysqlDb);
 

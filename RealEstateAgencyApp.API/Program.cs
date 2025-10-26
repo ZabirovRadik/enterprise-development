@@ -1,6 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using RealEstateAgencyApp.Application.Mappers;
 using RealEstateAgencyApp.Application.Services;
+using RealEstateAgencyApp.Contracts.Dtos.CounterpartyDtos;
+using RealEstateAgencyApp.Contracts.Dtos.RealEstateObjectDtos;
+using RealEstateAgencyApp.Contracts.Interfaces;
 using RealEstateAgencyApp.Domain.Interfaces;
 using RealEstateAgencyApp.Infrastructure.Persistence;
 using RealEstateAgencyApp.Infrastructure.Repositories;
@@ -14,7 +17,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<DBContext>(options =>
+builder.Services.AddDbContext<AppDbContext>(options =>
 {
     var connectionString = builder.Configuration.GetConnectionString("mysqldb");
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
@@ -24,7 +27,11 @@ builder.Services.AddScoped<ICounterpartyRepository, CounterpartyRepository>();
 builder.Services.AddScoped<IRealEstateObjectRepository, RealEstateObjectRepository>();
 builder.Services.AddScoped<IRequestRepository, RequestRepository>();
 
-builder.Services.AddScoped<AnalyticsService>();
+builder.Services.AddScoped<ICrudService<CounterpartyGetDto, CounterpartyEditDto>, CounterpartyService>();
+builder.Services.AddScoped<ICrudService<RealEstateObjectGetDto, RealEstateObjectEditDto>, RealEstateObjectService>();
+builder.Services.AddScoped<IRequestService, RequestService>();
+builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
+
 
 builder.Services.AddAutoMapper(typeof(AppMappingProfile));
 
@@ -44,7 +51,7 @@ app.MapControllers();
 
 using (var scope = app.Services.CreateScope())
 {
-    var context = scope.ServiceProvider.GetRequiredService<DBContext>();
+    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
     context.Database.EnsureCreated();
 

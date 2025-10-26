@@ -24,4 +24,9 @@ public class Counterparty
     /// Gets or sets the phone number of the counterparty.
     /// </summary>
     public required string Phone { get; set; }
+
+    /// <summary>
+    /// Gets or sets the collection of requests made by this counterparty.
+    /// </summary>
+    public ICollection<Request> Requests { get; set; } = new List<Request>();
 }

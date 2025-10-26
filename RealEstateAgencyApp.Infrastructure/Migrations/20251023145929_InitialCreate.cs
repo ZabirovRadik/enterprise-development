@@ -66,8 +66,8 @@ namespace RealEstateAgencyApp.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    CounterpartyID = table.Column<int>(type: "int", nullable: false),
-                    EstateID = table.Column<int>(type: "int", nullable: false),
+                    CounterpartyId = table.Column<int>(type: "int", nullable: false),
+                    EstateId = table.Column<int>(type: "int", nullable: false),
                     Type = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
@@ -77,14 +77,14 @@ namespace RealEstateAgencyApp.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_Requests", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Requests_Counterparties_CounterpartyID",
-                        column: x => x.CounterpartyID,
+                        name: "FK_Requests_Counterparties_CounterpartyId",
+                        column: x => x.CounterpartyId,
                         principalTable: "Counterparties",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Requests_RealEstateObjects_EstateID",
-                        column: x => x.EstateID,
+                        name: "FK_Requests_RealEstateObjects_EstateId",
+                        column: x => x.EstateId,
                         principalTable: "RealEstateObjects",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -104,14 +104,14 @@ namespace RealEstateAgencyApp.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Requests_CounterpartyID",
+                name: "IX_Requests_CounterpartyId",
                 table: "Requests",
-                column: "CounterpartyID");
+                column: "CounterpartyId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Requests_EstateID",
+                name: "IX_Requests_EstateId",
                 table: "Requests",
-                column: "EstateID");
+                column: "EstateId");
         }
 
         /// <inheritdoc />

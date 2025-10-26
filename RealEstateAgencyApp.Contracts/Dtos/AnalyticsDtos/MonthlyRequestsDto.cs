@@ -1,4 +1,4 @@
-namespace RealEstateAgencyApp.Application.Dtos.AnalyticsDtos;
+namespace RealEstateAgencyApp.Contracts.Dtos.AnalyticsDtos;
 
 /// <summary>
 /// Represents a DTO for monthly request statistics.

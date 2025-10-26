@@ -1,13 +1,15 @@
 ﻿using RealEstateAgencyApp.Domain.DataSeeders;
 using System.Data;
 
+namespace RealEstateAgencyApp.Tests;
+
 /// <summary>
 /// Contains unit tests for verifying queries on seeded real estate data.
-/// Uses DataSeed as a shared fixture to provide test data.
+/// Uses DataSeeder as a shared fixture to provide test data.
 /// </summary>
 /// <remarks>
 /// Initializes a new instance of the QueriesTests class
-/// with the provided DataSeed fixture.
+/// with the provided DataSeeder fixture.
 /// </remarks>
 /// <param name="testData">The seeded data used for running queries in tests.</param>
 public class QueriesTests(DataSeeder testData) : IClassFixture<DataSeeder>
@@ -26,7 +28,7 @@ public class QueriesTests(DataSeeder testData) : IClassFixture<DataSeeder>
 
         var sellers = _testData.Requests
             .Where(r => r.Type == RequestType.Sell && r.Date >= from && r.Date <= to)
-            .Select(r => GetCounterpartyById(r.CounterpartyID)!.FullName)  // ← ИСПРАВЛЕНО
+            .Select(r => r.Counterparty!.FullName)
             .Distinct()
             .Order()
             .ToList();
@@ -42,30 +44,26 @@ public class QueriesTests(DataSeeder testData) : IClassFixture<DataSeeder>
     {
         var expectedTopBuyers = new[]
         {
-            "Petr Petrov",     // 3
-            "Alexey Romanov",  // 1
-            "Andrey Popov",    // 1
-            "Anna Smirnova",   // 1
-            "Dmitry Orlov"     // 1
-        };
+        "Petr Petrov",     // 3
+        "Alexey Romanov",  // 1
+        "Andrey Popov",    // 1
+        "Anna Smirnova",   // 1
+        "Dmitry Orlov"     // 1
+    };
 
         var expectedTopSellers = new[]
         {
-            "Ivan Ivanov",       // 2
-            "Elena Volkova",     // 1
-            "Maria Kuznetsova",  // 1
-            "Natalia Ivanova",   // 1
-            "Sergey Sidorov"     // 1 
-        };
+        "Ivan Ivanov",       // 2
+        "Elena Volkova",     // 1
+        "Maria Kuznetsova",  // 1
+        "Natalia Ivanova",   // 1
+        "Sergey Sidorov"     // 1 
+    };
 
         var topBuyers = _testData.Requests
             .Where(r => r.Type == RequestType.Buy)
-            .GroupBy(r => r.CounterpartyID)  // ← ИСПРАВЛЕНО
-            .Select(g => new
-            {
-                Client = GetCounterpartyById(g.Key)!.FullName,  // ← ИСПРАВЛЕНО
-                Count = g.Count()
-            })
+            .GroupBy(r => r.Counterparty!.FullName)
+            .Select(g => new { Client = g.Key, Count = g.Count() })
             .OrderByDescending(x => x.Count)
             .ThenBy(x => x.Client)
             .Take(5)
@@ -74,12 +72,8 @@ public class QueriesTests(DataSeeder testData) : IClassFixture<DataSeeder>
 
         var topSellers = _testData.Requests
             .Where(r => r.Type == RequestType.Sell)
-            .GroupBy(r => r.CounterpartyID)  // ← ИСПРАВЛЕНО
-            .Select(g => new
-            {
-                Client = GetCounterpartyById(g.Key)!.FullName,  // ← ИСПРАВЛЕНО
-                Count = g.Count()
-            })
+            .GroupBy(r => r.Counterparty!.FullName)
+            .Select(g => new { Client = g.Key, Count = g.Count() })
             .OrderByDescending(x => x.Count)
             .ThenBy(x => x.Client)
             .Take(5)
@@ -89,6 +83,7 @@ public class QueriesTests(DataSeeder testData) : IClassFixture<DataSeeder>
         Assert.Equal(expectedTopBuyers, topBuyers);
         Assert.Equal(expectedTopSellers, topSellers);
     }
+
 
     /// <summary>
     /// Get request count for each type of real estate.
@@ -103,7 +98,7 @@ public class QueriesTests(DataSeeder testData) : IClassFixture<DataSeeder>
         const int expectedGarages = 1;    // Id 5
 
         var stats = _testData.Requests
-            .GroupBy(r => GetEstateById(r.EstateID)!.Type)  // ← ИСПРАВЛЕНО
+            .GroupBy(r => r.Estate!.Type)
             .Select(g => new { Type = g.Key, Count = g.Count() })
             .ToDictionary(x => x.Type, x => x.Count);
 
@@ -127,7 +122,7 @@ public class QueriesTests(DataSeeder testData) : IClassFixture<DataSeeder>
 
         var clients = _testData.Requests
             .Where(r => r.Price == minPrice)
-            .Select(r => GetCounterpartyById(r.CounterpartyID)!.FullName)  // ← ИСПРАВЛЕНО
+            .Select(r => r.Counterparty!.FullName)
             .Distinct()
             .ToList();
 
@@ -145,23 +140,12 @@ public class QueriesTests(DataSeeder testData) : IClassFixture<DataSeeder>
         var expectedClients = new[] { "Dmitry Orlov", "Petr Petrov" };
 
         var clients = _testData.Requests
-            .Where(r => r.Type == RequestType.Buy && GetEstateById(r.EstateID)!.Type == targetType)  // ← ИСПРАВЛЕНО
-            .Select(r => GetCounterpartyById(r.CounterpartyID)!.FullName)  // ← ИСПРАВЛЕНО
+            .Where(r => r.Type == RequestType.Buy && r.Estate!.Type == targetType)
+            .Select(r => r.Counterparty!.FullName)
             .Distinct()
             .Order()
             .ToList();
 
         Assert.Equal(expectedClients, clients);
-    }
-
-    // Вспомогательные методы для получения сущностей по ID
-    private Counterparty? GetCounterpartyById(int id)
-    {
-        return _testData.Counterpaties.FirstOrDefault(c => c.Id == id);
-    }
-
-    private RealEstateObject? GetEstateById(int id)
-    {
-        return _testData.Estates.FirstOrDefault(e => e.Id == id);
     }
 }

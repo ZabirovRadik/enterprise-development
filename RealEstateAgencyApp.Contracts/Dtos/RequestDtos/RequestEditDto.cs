@@ -1,17 +1,12 @@
 using RealEstateAgencyApp.Domain.Entities.Enums;
 
-namespace RealEstateAgencyApp.Application.Dtos.RequestDtos;
+namespace RealEstateAgencyApp.Contracts.Dtos.RequestDtos;
 
 /// <summary>
-/// Represents a DTO for retrieving request information.
+/// Represents a DTO for creating or updating a request.
 /// </summary>
-public class RequestGetDto
+public class RequestEditDto
 {
-    /// <summary>
-    /// Unique identifier of the request.
-    /// </summary>
-    public required int Id { get; set; }
-
     /// <summary>
     /// ID of the counterparty making the request.
     /// </summary>

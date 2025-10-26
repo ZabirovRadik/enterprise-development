@@ -1,8 +1,8 @@
 using AutoMapper;
-using RealEstateAgencyApp.Application.Dtos.AnalyticsDtos;
-using RealEstateAgencyApp.Application.Dtos.CounterpartyDtos;
-using RealEstateAgencyApp.Application.Dtos.RealEstateObjectDtos;
-using RealEstateAgencyApp.Application.Dtos.RequestDtos;
+using RealEstateAgencyApp.Contracts.Dtos.AnalyticsDtos;
+using RealEstateAgencyApp.Contracts.Dtos.CounterpartyDtos;
+using RealEstateAgencyApp.Contracts.Dtos.RealEstateObjectDtos;
+using RealEstateAgencyApp.Contracts.Dtos.RequestDtos;
 using RealEstateAgencyApp.Domain.Entities;
 
 namespace RealEstateAgencyApp.Application.Mappers;

@@ -1,32 +1,40 @@
-using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using RealEstateAgencyApp.Application.Dtos.RealEstateObjectDtos;
-using RealEstateAgencyApp.Domain.Entities;
-using RealEstateAgencyApp.Domain.Interfaces;
+using RealEstateAgencyApp.Contracts.Dtos.RealEstateObjectDtos;
+using RealEstateAgencyApp.Contracts.Interfaces;
+using System.Net;
 
 namespace RealEstateAgencyApp.API.Controllers;
 
 /// <summary>
 /// Endpoints for managing real estate objects.
 /// </summary>
-/// <param name="realEstateRepository">Repository for accessing real estate object data.</param>
-/// <param name="mapper">Mapper for DTOs and entities.</param>
+/// <param name="realEstateService">Service for real estate object operations.</param>
+/// <param name="logger">Logger for error logging.</param>
 [ApiController]
 [Route("api/real-estate-objects")]
 public class RealEstateObjectController(
-    IRealEstateObjectRepository realEstateRepository,
-    IMapper mapper
+    ICrudService<RealEstateObjectGetDto, RealEstateObjectEditDto> realEstateService,
+    ILogger<RealEstateObjectController> logger
 ) : ControllerBase
 {
     /// <summary>
     /// Returns all real estate objects in the system.
     /// </summary>
     [HttpGet]
+    [ProducesResponseType(typeof(List<RealEstateObjectGetDto>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
     public async Task<ActionResult<List<RealEstateObjectGetDto>>> GetAllRealEstateObjects()
     {
-        var estates = await realEstateRepository.GetAllAsync();
-        var estatesDto = mapper.Map<List<RealEstateObjectGetDto>>(estates);
-        return Ok(estatesDto);
+        try
+        {
+            var result = await realEstateService.GetAllAsync();
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error occurred while getting all real estate objects");
+            return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while retrieving real estate objects");
+        }
     }
 
     /// <summary>
@@ -34,13 +42,34 @@ public class RealEstateObjectController(
     /// </summary>
     /// <param name="id">The ID of the real estate object to return.</param>
     [HttpGet("{id:int}")]
+    [ProducesResponseType(typeof(RealEstateObjectGetDto), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
     public async Task<ActionResult<RealEstateObjectGetDto>> GetRealEstateObjectById(int id)
     {
-        var estate = await realEstateRepository.GetByIdAsync(id);
-        if (estate == null) return NotFound();
+        try
+        {
+            if (id <= 0)
+            {
+                logger.LogWarning("GetRealEstateObjectById called with invalid id: {Id}", id);
+                return BadRequest("ID must be greater than 0");
+            }
 
-        var estateDto = mapper.Map<RealEstateObjectGetDto>(estate);
-        return Ok(estateDto);
+            var estate = await realEstateService.GetByIdAsync(id);
+            if (estate == null)
+            {
+                logger.LogWarning("Real estate object with id {Id} not found", id);
+                return NotFound();
+            }
+
+            return Ok(estate);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error occurred while getting real estate object by id: {Id}", id);
+            return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while retrieving the real estate object");
+        }
     }
 
     /// <summary>
@@ -48,13 +77,34 @@ public class RealEstateObjectController(
     /// </summary>
     /// <param name="id">The ID of the real estate object to delete.</param>
     [HttpDelete("{id:int}")]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
     public async Task<ActionResult> DeleteRealEstateObjectById(int id)
     {
-        var isExists = await realEstateRepository.ExistsByIdAsync(id);
-        if (!isExists) return NotFound();
+        try
+        {
+            if (id <= 0)
+            {
+                logger.LogWarning("DeleteRealEstateObjectById called with invalid id: {Id}", id);
+                return BadRequest("ID must be greater than 0");
+            }
 
-        await realEstateRepository.DeleteAsync(id);
-        return NoContent();
+            await realEstateService.DeleteAsync(id);
+            logger.LogInformation("Real estate object with id {Id} deleted successfully", id);
+            return NoContent();
+        }
+        catch (KeyNotFoundException ex)
+        {
+            logger.LogWarning(ex, "Attempt to delete non-existent real estate object with id: {Id}", id);
+            return NotFound();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error occurred while deleting real estate object with id: {Id}", id);
+            return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while deleting the real estate object");
+        }
     }
 
     /// <summary>
@@ -62,20 +112,34 @@ public class RealEstateObjectController(
     /// </summary>
     /// <param name="newEstateDto">The data of the real estate object to create.</param>
     [HttpPost]
+    [ProducesResponseType(typeof(RealEstateObjectGetDto), (int)HttpStatusCode.Created)]
+    [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
     public async Task<ActionResult<RealEstateObjectGetDto>> CreateRealEstateObject([FromBody] RealEstateObjectEditDto newEstateDto)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
+        try
+        {
+            if (!ModelState.IsValid)
+            {
+                logger.LogWarning("CreateRealEstateObject called with invalid model state: {Errors}",
+                    string.Join("; ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage)));
+                return BadRequest(ModelState);
+            }
 
-        // Check if cadastral number already exists
-        var existingEstate = await realEstateRepository.GetByCadastralNumberAsync(newEstateDto.CadastralNumber);
-        if (existingEstate != null)
-            return BadRequest("Real estate object with this cadastral number already exists");
-
-        var newEstate = mapper.Map<RealEstateObject>(newEstateDto);
-        await realEstateRepository.AddAsync(newEstate);
-
-        var resultDto = mapper.Map<RealEstateObjectGetDto>(newEstate);
-        return CreatedAtAction(nameof(GetRealEstateObjectById), new { id = newEstate.Id }, resultDto);
+            var resultDto = await realEstateService.CreateAsync(newEstateDto);
+            logger.LogInformation("Real estate object created successfully with id: {Id}", resultDto.Id);
+            return CreatedAtAction(nameof(GetRealEstateObjectById), new { id = resultDto.Id }, resultDto);
+        }
+        catch (InvalidOperationException ex) when (ex.Message.Contains("already exists"))
+        {
+            logger.LogWarning(ex, "Attempt to create real estate object with duplicate cadastral number");
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error occurred while creating real estate object");
+            return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while creating the real estate object");
+        }
     }
 
     /// <summary>
@@ -84,21 +148,45 @@ public class RealEstateObjectController(
     /// <param name="id">The ID of the real estate object to update.</param>
     /// <param name="updatedEstateDto">The updated real estate object data.</param>
     [HttpPut("{id:int}")]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
     public async Task<ActionResult> UpdateRealEstateObject(int id, [FromBody] RealEstateObjectEditDto updatedEstateDto)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
+        try
+        {
+            if (!ModelState.IsValid)
+            {
+                logger.LogWarning("UpdateRealEstateObject called with invalid model state for id {Id}: {Errors}",
+                    id, string.Join("; ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage)));
+                return BadRequest(ModelState);
+            }
 
-        var estate = await realEstateRepository.GetByIdAsync(id);
-        if (estate == null) return NotFound();
+            if (id <= 0)
+            {
+                logger.LogWarning("UpdateRealEstateObject called with invalid id: {Id}", id);
+                return BadRequest("ID must be greater than 0");
+            }
 
-        // Check if cadastral number is taken by another estate
-        var existingEstate = await realEstateRepository.GetByCadastralNumberAsync(updatedEstateDto.CadastralNumber);
-        if (existingEstate != null && existingEstate.Id != id)
-            return BadRequest("Real estate object with this cadastral number already exists");
-
-        var updatedEstate = mapper.Map<RealEstateObject>(updatedEstateDto);
-        updatedEstate.Id = estate.Id;
-        await realEstateRepository.UpdateAsync(updatedEstate);
-        return NoContent();
+            await realEstateService.UpdateAsync(id, updatedEstateDto);
+            logger.LogInformation("Real estate object with id {Id} updated successfully", id);
+            return NoContent();
+        }
+        catch (KeyNotFoundException ex)
+        {
+            logger.LogWarning(ex, "Attempt to update non-existent real estate object with id: {Id}", id);
+            return NotFound();
+        }
+        catch (InvalidOperationException ex) when (ex.Message.Contains("already exists"))
+        {
+            logger.LogWarning(ex, "Attempt to update real estate object with duplicate cadastral number for id: {Id}", id);
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error occurred while updating real estate object with id: {Id}", id);
+            return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while updating the real estate object");
+        }
     }
 }

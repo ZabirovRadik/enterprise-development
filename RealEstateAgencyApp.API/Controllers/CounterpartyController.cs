@@ -1,32 +1,40 @@
-using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using RealEstateAgencyApp.Application.Dtos.CounterpartyDtos;
-using RealEstateAgencyApp.Domain.Entities;
-using RealEstateAgencyApp.Domain.Interfaces;
+using RealEstateAgencyApp.Contracts.Dtos.CounterpartyDtos;
+using RealEstateAgencyApp.Contracts.Interfaces;
+using System.Net;
 
 namespace RealEstateAgencyApp.API.Controllers;
 
 /// <summary>
 /// Endpoints for managing counterparties.
 /// </summary>
-/// <param name="counterpartyRepository">Repository for accessing counterparty data.</param>
-/// <param name="mapper">Mapper for DTOs and entities.</param>
+/// <param name="counterpartyService">Service for counterparty operations.</param>
+/// <param name="logger">Logger for error logging.</param>
 [ApiController]
 [Route("api/counterparties")]
 public class CounterpartyController(
-    ICounterpartyRepository counterpartyRepository,
-    IMapper mapper
+    ICrudService<CounterpartyGetDto, CounterpartyEditDto> counterpartyService,
+    ILogger<CounterpartyController> logger
 ) : ControllerBase
 {
     /// <summary>
     /// Returns all counterparties in the system.
     /// </summary>
     [HttpGet]
+    [ProducesResponseType(typeof(List<CounterpartyGetDto>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
     public async Task<ActionResult<List<CounterpartyGetDto>>> GetAllCounterparties()
     {
-        var counterparties = await counterpartyRepository.GetAllAsync();
-        var counterpartiesDto = mapper.Map<List<CounterpartyGetDto>>(counterparties);
-        return Ok(counterpartiesDto);
+        try
+        {
+            var result = await counterpartyService.GetAllAsync();
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error occurred while getting all counterparties");
+            return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while retrieving counterparties");
+        }
     }
 
     /// <summary>
@@ -34,13 +42,34 @@ public class CounterpartyController(
     /// </summary>
     /// <param name="id">The ID of the counterparty to return.</param>
     [HttpGet("{id:int}")]
+    [ProducesResponseType(typeof(CounterpartyGetDto), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
     public async Task<ActionResult<CounterpartyGetDto>> GetCounterpartyById(int id)
     {
-        var counterparty = await counterpartyRepository.GetByIdAsync(id);
-        if (counterparty == null) return NotFound();
+        try
+        {
+            if (id <= 0)
+            {
+                logger.LogWarning("GetCounterpartyById called with invalid id: {Id}", id);
+                return BadRequest("ID must be greater than 0");
+            }
 
-        var counterpartyDto = mapper.Map<CounterpartyGetDto>(counterparty);
-        return Ok(counterpartyDto);
+            var counterparty = await counterpartyService.GetByIdAsync(id);
+            if (counterparty == null)
+            {
+                logger.LogWarning("Counterparty with id {Id} not found", id);
+                return NotFound();
+            }
+
+            return Ok(counterparty);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error occurred while getting counterparty by id: {Id}", id);
+            return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while retrieving the counterparty");
+        }
     }
 
     /// <summary>
@@ -48,13 +77,34 @@ public class CounterpartyController(
     /// </summary>
     /// <param name="id">The ID of the counterparty to delete.</param>
     [HttpDelete("{id:int}")]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
     public async Task<ActionResult> DeleteCounterpartyById(int id)
     {
-        var isExists = await counterpartyRepository.ExistsByIdAsync(id);
-        if (!isExists) return NotFound();
+        try
+        {
+            if (id <= 0)
+            {
+                logger.LogWarning("DeleteCounterpartyById called with invalid id: {Id}", id);
+                return BadRequest("ID must be greater than 0");
+            }
 
-        await counterpartyRepository.DeleteAsync(id);
-        return NoContent();
+            await counterpartyService.DeleteAsync(id);
+            logger.LogInformation("Counterparty with id {Id} deleted successfully", id);
+            return NoContent();
+        }
+        catch (KeyNotFoundException ex)
+        {
+            logger.LogWarning(ex, "Attempt to delete non-existent counterparty with id: {Id}", id);
+            return NotFound();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error occurred while deleting counterparty with id: {Id}", id);
+            return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while deleting the counterparty");
+        }
     }
 
     /// <summary>
@@ -62,20 +112,34 @@ public class CounterpartyController(
     /// </summary>
     /// <param name="newCounterpartyDto">The data of the counterparty to create.</param>
     [HttpPost]
+    [ProducesResponseType(typeof(CounterpartyGetDto), (int)HttpStatusCode.Created)]
+    [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
     public async Task<ActionResult<CounterpartyGetDto>> CreateCounterparty([FromBody] CounterpartyEditDto newCounterpartyDto)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
+        try
+        {
+            if (!ModelState.IsValid)
+            {
+                logger.LogWarning("CreateCounterparty called with invalid model state: {Errors}",
+                    string.Join("; ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage)));
+                return BadRequest(ModelState);
+            }
 
-        // Check if passport number already exists
-        var existingCounterparty = await counterpartyRepository.GetByPassportNumberAsync(newCounterpartyDto.PassportNumber);
-        if (existingCounterparty != null)
-            return BadRequest("Counterparty with this passport number already exists");
-
-        var newCounterparty = mapper.Map<Counterparty>(newCounterpartyDto);
-        await counterpartyRepository.AddAsync(newCounterparty);
-
-        var resultDto = mapper.Map<CounterpartyGetDto>(newCounterparty);
-        return CreatedAtAction(nameof(GetCounterpartyById), new { id = newCounterparty.Id }, resultDto);
+            var resultDto = await counterpartyService.CreateAsync(newCounterpartyDto);
+            logger.LogInformation("Counterparty created successfully with id: {Id}", resultDto.Id);
+            return CreatedAtAction(nameof(GetCounterpartyById), new { id = resultDto.Id }, resultDto);
+        }
+        catch (InvalidOperationException ex) when (ex.Message.Contains("already exists"))
+        {
+            logger.LogWarning(ex, "Attempt to create counterparty with duplicate passport number");
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error occurred while creating counterparty");
+            return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while creating the counterparty");
+        }
     }
 
     /// <summary>
@@ -84,21 +148,45 @@ public class CounterpartyController(
     /// <param name="id">The ID of the counterparty to update.</param>
     /// <param name="updatedCounterpartyDto">The updated counterparty data.</param>
     [HttpPut("{id:int}")]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
     public async Task<ActionResult> UpdateCounterparty(int id, [FromBody] CounterpartyEditDto updatedCounterpartyDto)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
+        try
+        {
+            if (!ModelState.IsValid)
+            {
+                logger.LogWarning("UpdateCounterparty called with invalid model state for id {Id}: {Errors}",
+                    id, string.Join("; ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage)));
+                return BadRequest(ModelState);
+            }
 
-        var counterparty = await counterpartyRepository.GetByIdAsync(id);
-        if (counterparty == null) return NotFound();
+            if (id <= 0)
+            {
+                logger.LogWarning("UpdateCounterparty called with invalid id: {Id}", id);
+                return BadRequest("ID must be greater than 0");
+            }
 
-        // Check if passport number is taken by another counterparty
-        var existingCounterparty = await counterpartyRepository.GetByPassportNumberAsync(updatedCounterpartyDto.PassportNumber);
-        if (existingCounterparty != null && existingCounterparty.Id != id)
-            return BadRequest("Counterparty with this passport number already exists");
-
-        var updatedCounterparty = mapper.Map<Counterparty>(updatedCounterpartyDto);
-        updatedCounterparty.Id = counterparty.Id;
-        await counterpartyRepository.UpdateAsync(updatedCounterparty);
-        return NoContent();
+            await counterpartyService.UpdateAsync(id, updatedCounterpartyDto);
+            logger.LogInformation("Counterparty with id {Id} updated successfully", id);
+            return NoContent();
+        }
+        catch (KeyNotFoundException ex)
+        {
+            logger.LogWarning(ex, "Attempt to update non-existent counterparty with id: {Id}", id);
+            return NotFound();
+        }
+        catch (InvalidOperationException ex) when (ex.Message.Contains("already exists"))
+        {
+            logger.LogWarning(ex, "Attempt to update counterparty with duplicate passport number for id: {Id}", id);
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error occurred while updating counterparty with id: {Id}", id);
+            return StatusCode((int)HttpStatusCode.InternalServerError, "An error occurred while updating the counterparty");
+        }
     }
 }

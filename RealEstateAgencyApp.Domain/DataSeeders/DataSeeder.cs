@@ -16,7 +16,7 @@ public class DataSeeder
     /// <summary>
     /// Gets the list of counterparties (clients).
     /// </summary>
-    public List<Counterparty> Counterpaties { get; }
+    public List<Counterparty> Counterparties { get; }
 
     /// <summary>
     /// Gets the list of requests linking clients with estates.
@@ -29,8 +29,9 @@ public class DataSeeder
     public DataSeeder()
     {
         Estates = InitEstates();
-        Counterpaties = InitCounterpaties();
-        Requests = InitRequests();
+        Counterparties = InitCounterparties();
+        Requests = InitRequests(Counterparties, Estates);
+        EstablishBidirectionalRelationships();
     }
 
     /// <summary>
@@ -53,7 +54,7 @@ public class DataSeeder
     /// <summary>
     /// Initializes a predefined list of counterparties (clients).
     /// </summary>
-    private static List<Counterparty> InitCounterpaties() =>
+    private static List<Counterparty> InitCounterparties() =>
         [
             new Counterparty { Id = 1, FullName="Ivan Ivanov", PassportNumber="4500 123456", Phone="+7 999 111-22-33" },
             new Counterparty { Id = 2, FullName="Petr Petrov", PassportNumber="4500 654321", Phone="+7 999 444-55-66" },
@@ -68,23 +69,35 @@ public class DataSeeder
         ];
 
     /// <summary>
-    /// Initializes a predefined list of requests using only IDs.
+    /// Initializes a predefined list of requests.
     /// </summary>
-    private List<Request> InitRequests() =>
+    private static List<Request> InitRequests(List<Counterparty> clients, List<RealEstateObject> estates) =>
         [
-            new Request { Id = 1, CounterpartyID = 1, EstateID = 1, Type = RequestType.Sell, Price = 8_000_000, Date = new DateTime(2024, 5, 10) },
-            new Request { Id = 2, CounterpartyID = 2, EstateID = 2, Type = RequestType.Buy, Price = 12_500_000, Date = new DateTime(2024, 6, 15) },
-            new Request { Id = 3, CounterpartyID = 3, EstateID = 3, Type = RequestType.Sell, Price = 45_000_000, Date = new DateTime(2024, 7, 01) },
-            new Request { Id = 4, CounterpartyID = 4, EstateID = 4, Type = RequestType.Buy, Price = 3_000_000, Date = new DateTime(2024, 8, 12) },
-            new Request { Id = 5, CounterpartyID = 5, EstateID = 5, Type = RequestType.Sell, Price = 600_000, Date = new DateTime(2024, 9, 20) },
-            new Request { Id = 6, CounterpartyID = 6, EstateID = 6, Type = RequestType.Buy, Price = 10_000_000, Date = new DateTime(2024, 10, 05) },
-            new Request { Id = 7, CounterpartyID = 7, EstateID = 7, Type = RequestType.Sell, Price = 25_000_000, Date = new DateTime(2024, 11, 11) },
-            new Request { Id = 8, CounterpartyID = 8, EstateID = 8, Type = RequestType.Buy, Price = 55_000_000, Date = new DateTime(2024, 12, 01) },
-            new Request { Id = 9, CounterpartyID = 9, EstateID = 9, Type = RequestType.Sell, Price = 9_000_000, Date = new DateTime(2025, 1, 15) },
-            new Request { Id = 10, CounterpartyID = 10, EstateID = 10, Type = RequestType.Buy, Price = 80_000_000, Date = new DateTime(2025, 2, 20) },
-            new Request { Id = 11, CounterpartyID = 1, EstateID = 2, Type = RequestType.Sell, Price = 9_000_000, Date = new DateTime(2024, 3, 10) },
-            new Request { Id = 12, CounterpartyID = 2, EstateID = 3, Type = RequestType.Buy, Price = 14_000_000, Date = new DateTime(2024, 4, 05) },
-            new Request { Id = 13, CounterpartyID = 2, EstateID = 6, Type = RequestType.Buy, Price = 11_000_000, Date = new DateTime(2024, 7, 19) },
-            new Request { Id = 14, CounterpartyID = 7, EstateID = 7, Type = RequestType.Buy, Price = 24_000_000, Date = new DateTime(2024, 11, 20) }
+            new Request { Id = 1,  Counterparty=clients[0],  Estate=estates[0], Type=RequestType.Sell, Price=8_000_000, Date=new DateTime(2024,5,10) },
+            new Request { Id = 2, Counterparty=clients[1], Estate=estates[1], Type=RequestType.Buy, Price=12_500_000, Date=new DateTime(2024,6,15) },
+            new Request { Id = 3, Counterparty=clients[2], Estate=estates[2], Type=RequestType.Sell, Price=45_000_000, Date=new DateTime(2024,7,01) },
+            new Request { Id = 4, Counterparty=clients[3], Estate=estates[3], Type=RequestType.Buy, Price=3_000_000, Date=new DateTime(2024,8,12) },
+            new Request { Id = 5, Counterparty=clients[4], Estate=estates[4], Type=RequestType.Sell, Price=600_000, Date=new DateTime(2024,9,20) },
+            new Request { Id = 6, Counterparty=clients[5], Estate=estates[5], Type=RequestType.Buy, Price=10_000_000, Date=new DateTime(2024,10,05) },
+            new Request { Id = 7, Counterparty=clients[6], Estate=estates[6], Type=RequestType.Sell, Price=25_000_000, Date=new DateTime(2024,11,11) },
+            new Request { Id = 8, Counterparty=clients[7], Estate=estates[7], Type=RequestType.Buy, Price=55_000_000, Date=new DateTime(2024,12,01) },
+            new Request { Id = 9, Counterparty=clients[8], Estate=estates[8], Type=RequestType.Sell, Price=9_000_000, Date=new DateTime(2025,1,15) },
+            new Request { Id = 10, Counterparty=clients[9], Estate=estates[9], Type=RequestType.Buy, Price=80_000_000, Date=new DateTime(2025,2,20) },
+            new Request { Id = 11, Counterparty=clients[0], Estate=estates[1], Type=RequestType.Sell, Price=9_000_000, Date=new DateTime(2024,3,10) },
+            new Request { Id = 12, Counterparty=clients[1], Estate=estates[2], Type=RequestType.Buy, Price=14_000_000, Date=new DateTime(2024,4,05) },
+            new Request { Id = 13, Counterparty=clients[1], Estate=estates[5], Type=RequestType.Buy, Price=11_000_000, Date=new DateTime(2024,7,19) },
+            new Request { Id = 14, Counterparty=clients[6], Estate=estates[6], Type=RequestType.Buy, Price=24_000_000, Date=new DateTime(2024,11,20) }
         ];
+
+    /// <summary>
+    /// Establishes bidirectional relationships between entities.
+    /// </summary>
+    private void EstablishBidirectionalRelationships()
+    {
+        foreach (var request in Requests)
+        {
+            request.Counterparty.Requests.Add(request);
+            request.Estate.Requests.Add(request);
+        }
+    }
 }

@@ -1,6 +1,6 @@
 using RealEstateAgencyApp.Domain.Entities.Enums;
 
-namespace RealEstateAgencyApp.Application.Dtos.AnalyticsDtos;
+namespace RealEstateAgencyApp.Contracts.Dtos.AnalyticsDtos;
 
 /// <summary>
 /// Represents a DTO for a real estate object with request count.

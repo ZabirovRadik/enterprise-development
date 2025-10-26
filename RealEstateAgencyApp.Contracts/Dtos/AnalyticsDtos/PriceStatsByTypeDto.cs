@@ -1,6 +1,6 @@
 using RealEstateAgencyApp.Domain.Entities.Enums;
 
-namespace RealEstateAgencyApp.Application.Dtos.AnalyticsDtos;
+namespace RealEstateAgencyApp.Contracts.Dtos.AnalyticsDtos;
 
 /// <summary>
 /// Represents a DTO for price statistics by real estate type.

@@ -15,12 +15,12 @@ public class Request
     /// <summary>
     /// Gets or sets the counterparty making the request.
     /// </summary>
-    public required int CounterpartyID { get; set; }
+    public required Counterparty Counterparty { get; set; }
 
     /// <summary>
     /// Gets or sets the real estate object related to the request.
     /// </summary>
-    public required int EstateID { get; set; }
+    public required RealEstateObject Estate { get; set; }
 
     /// <summary>
     /// Gets or sets the type of the request (buy or sell).

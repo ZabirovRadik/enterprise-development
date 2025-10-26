@@ -10,8 +10,8 @@ using RealEstateAgencyApp.Infrastructure.Persistence;
 
 namespace RealEstateAgencyApp.Infrastructure.Migrations
 {
-    [DbContext(typeof(DBContext))]
-    partial class DBContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(AppDbContext))]
+    partial class AppDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -113,13 +113,13 @@ namespace RealEstateAgencyApp.Infrastructure.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CounterpartyID")
+                    b.Property<int>("CounterpartyId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int>("EstateID")
+                    b.Property<int>("EstateId")
                         .HasColumnType("int");
 
                     b.Property<decimal>("Price")
@@ -131,26 +131,40 @@ namespace RealEstateAgencyApp.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CounterpartyID");
+                    b.HasIndex("CounterpartyId");
 
-                    b.HasIndex("EstateID");
+                    b.HasIndex("EstateId");
 
                     b.ToTable("Requests");
                 });
 
             modelBuilder.Entity("RealEstateAgencyApp.Domain.Entities.Request", b =>
                 {
-                    b.HasOne("RealEstateAgencyApp.Domain.Entities.Counterparty", null)
-                        .WithMany()
-                        .HasForeignKey("CounterpartyID")
+                    b.HasOne("RealEstateAgencyApp.Domain.Entities.Counterparty", "Counterparty")
+                        .WithMany("Requests")
+                        .HasForeignKey("CounterpartyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("RealEstateAgencyApp.Domain.Entities.RealEstateObject", null)
-                        .WithMany()
-                        .HasForeignKey("EstateID")
+                    b.HasOne("RealEstateAgencyApp.Domain.Entities.RealEstateObject", "Estate")
+                        .WithMany("Requests")
+                        .HasForeignKey("EstateId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Counterparty");
+
+                    b.Navigation("Estate");
+                });
+
+            modelBuilder.Entity("RealEstateAgencyApp.Domain.Entities.Counterparty", b =>
+                {
+                    b.Navigation("Requests");
+                });
+
+            modelBuilder.Entity("RealEstateAgencyApp.Domain.Entities.RealEstateObject", b =>
+                {
+                    b.Navigation("Requests");
                 });
 #pragma warning restore 612, 618
         }
