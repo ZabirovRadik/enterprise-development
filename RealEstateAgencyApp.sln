@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RealEstateAgencyApp.Domain"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RealEstateAgencyApp.Tests", "RealEstateAgencyApp.Tests\RealEstateAgencyApp.Tests.csproj", "{7514D71A-C148-4A73-BE6F-489D7E2E9274}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RealEstateAgencyApp.Api", "RealEstateAgencyApp.API\RealEstateAgencyApp.Api.csproj", "{C492026B-79CB-49BA-8C8E-08CF55BF1516}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RealEstateAgencyApp.Api", "RealEstateAgencyApp.Api\RealEstateAgencyApp.Api.csproj", "{C492026B-79CB-49BA-8C8E-08CF55BF1516}"
 	ProjectSection(ProjectDependencies) = postProject
 		{E6851F2F-AA1A-7C05-DCDE-1385FB985C2E} = {E6851F2F-AA1A-7C05-DCDE-1385FB985C2E}
 	EndProjectSection
