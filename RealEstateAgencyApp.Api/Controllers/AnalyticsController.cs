@@ -3,7 +3,7 @@ using RealEstateAgencyApp.Contracts.Dtos.AnalyticsDtos;
 using RealEstateAgencyApp.Contracts.Interfaces;
 using System.Net;
 
-namespace RealEstateAgencyApp.API.Controllers;
+namespace RealEstateAgencyApp.Api.Controllers;
 
 /// <summary>
 /// Analytics endpoints for real estate objects, counterparties, and requests.

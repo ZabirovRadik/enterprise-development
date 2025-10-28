@@ -10,21 +10,15 @@ namespace RealEstateAgencyApp.Application.Services;
 /// Service for managing real estate object entities.
 /// Provides CRUD operations for real estate objects with business logic validation.
 /// </summary>
-public class RealEstateObjectService : ICrudService<RealEstateObjectGetDto, RealEstateObjectEditDto>
+/// <remarks>
+/// Initializes a new instance of the <see cref="RealEstateObjectService"/> class.
+/// </remarks>
+/// <param name="realEstateRepository">The repository for real estate object data access.</param>
+/// <param name="mapper">The mapper for DTO and entity transformations.</param>
+public class RealEstateObjectService(IRealEstateObjectRepository realEstateRepository, IMapper mapper) : ICrudService<RealEstateObjectGetDto, RealEstateObjectEditDto>
 {
-    private readonly IRealEstateObjectRepository _realEstateRepository;
-    private readonly IMapper _mapper;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="RealEstateObjectService"/> class.
-    /// </summary>
-    /// <param name="realEstateRepository">The repository for real estate object data access.</param>
-    /// <param name="mapper">The mapper for DTO and entity transformations.</param>
-    public RealEstateObjectService(IRealEstateObjectRepository realEstateRepository, IMapper mapper)
-    {
-        _realEstateRepository = realEstateRepository;
-        _mapper = mapper;
-    }
+    private readonly IRealEstateObjectRepository _realEstateRepository = realEstateRepository;
+    private readonly IMapper _mapper = mapper;
 
     /// <summary>
     /// Retrieves all real estate objects from the system.
@@ -55,7 +49,6 @@ public class RealEstateObjectService : ICrudService<RealEstateObjectGetDto, Real
     /// <exception cref="InvalidOperationException">Thrown when a real estate object with the same cadastral number already exists.</exception>
     public async Task<RealEstateObjectGetDto> CreateAsync(RealEstateObjectEditDto createDto)
     {
-        // Check if cadastral number already exists
         var existingEstate = await _realEstateRepository.GetByCadastralNumberAsync(createDto.CadastralNumber);
         if (existingEstate != null)
             throw new InvalidOperationException("Real estate object with this cadastral number already exists");
@@ -75,11 +68,9 @@ public class RealEstateObjectService : ICrudService<RealEstateObjectGetDto, Real
     /// <exception cref="InvalidOperationException">Thrown when the cadastral number is already taken by another real estate object.</exception>
     public async Task UpdateAsync(int id, RealEstateObjectEditDto updateDto)
     {
-        var estate = await _realEstateRepository.GetByIdAsync(id);
-        if (estate == null)
+        if (!await _realEstateRepository.ExistsByIdAsync(id))
             throw new KeyNotFoundException($"Real estate object with ID {id} not found");
 
-        // Check if cadastral number is taken by another estate
         var existingEstate = await _realEstateRepository.GetByCadastralNumberAsync(updateDto.CadastralNumber);
         if (existingEstate != null && existingEstate.Id != id)
             throw new InvalidOperationException("Real estate object with this cadastral number already exists");

@@ -3,7 +3,7 @@ using RealEstateAgencyApp.Contracts.Dtos.CounterpartyDtos;
 using RealEstateAgencyApp.Contracts.Interfaces;
 using System.Net;
 
-namespace RealEstateAgencyApp.API.Controllers;
+namespace RealEstateAgencyApp.Api.Controllers;
 
 /// <summary>
 /// Endpoints for managing counterparties.

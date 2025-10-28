@@ -65,5 +65,5 @@ public class RealEstateObject
     /// <summary>
     /// Gets or sets the collection of requests for this real estate object.
     /// </summary>
-    public ICollection<Request> Requests { get; set; } = new List<Request>();
+    public ICollection<Request> Requests { get; set; } = [];
 }

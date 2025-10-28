@@ -10,31 +10,23 @@ namespace RealEstateAgencyApp.Application.Services;
 /// Service for managing request entities.
 /// Provides CRUD operations and query capabilities for requests with business logic validation.
 /// </summary>
-public class RequestService : ICrudService<RequestGetDto, RequestEditDto>, IRequestService
+/// <remarks>
+/// Initializes a new instance of the <see cref="RequestService"/> class.
+/// </remarks>
+/// <param name="requestRepository">The repository for request data access.</param>
+/// <param name="counterpartyRepository">The repository for counterparty data access.</param>
+/// <param name="realEstateRepository">The repository for real estate object data access.</param>
+/// <param name="mapper">The mapper for DTO and entity transformations.</param>
+public class RequestService(
+    IRequestRepository requestRepository,
+    ICounterpartyRepository counterpartyRepository,
+    IRealEstateObjectRepository realEstateRepository,
+    IMapper mapper) : ICrudService<RequestGetDto, RequestEditDto>, IRequestService
 {
-    private readonly IRequestRepository _requestRepository;
-    private readonly ICounterpartyRepository _counterpartyRepository;
-    private readonly IRealEstateObjectRepository _realEstateRepository;
-    private readonly IMapper _mapper;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="RequestService"/> class.
-    /// </summary>
-    /// <param name="requestRepository">The repository for request data access.</param>
-    /// <param name="counterpartyRepository">The repository for counterparty data access.</param>
-    /// <param name="realEstateRepository">The repository for real estate object data access.</param>
-    /// <param name="mapper">The mapper for DTO and entity transformations.</param>
-    public RequestService(
-        IRequestRepository requestRepository,
-        ICounterpartyRepository counterpartyRepository,
-        IRealEstateObjectRepository realEstateRepository,
-        IMapper mapper)
-    {
-        _requestRepository = requestRepository;
-        _counterpartyRepository = counterpartyRepository;
-        _realEstateRepository = realEstateRepository;
-        _mapper = mapper;
-    }
+    private readonly IRequestRepository _requestRepository = requestRepository;
+    private readonly ICounterpartyRepository _counterpartyRepository = counterpartyRepository;
+    private readonly IRealEstateObjectRepository _realEstateRepository = realEstateRepository;
+    private readonly IMapper _mapper = mapper;
 
     /// <summary>
     /// Retrieves all requests from the system.
@@ -87,7 +79,6 @@ public class RequestService : ICrudService<RequestGetDto, RequestEditDto>, IRequ
     /// <exception cref="KeyNotFoundException">Thrown when the specified counterparty or real estate object is not found.</exception>
     public async Task<RequestGetDto> CreateAsync(RequestEditDto createDto)
     {
-        // Check if counterparty and estate exist
         var isCounterpartyExists = await _counterpartyRepository.ExistsByIdAsync(createDto.CounterpartyID);
         var isEstateExists = await _realEstateRepository.ExistsByIdAsync(createDto.EstateID);
 
@@ -113,11 +104,8 @@ public class RequestService : ICrudService<RequestGetDto, RequestEditDto>, IRequ
 
         if (!isCounterpartyExists || !isEstateExists)
             throw new KeyNotFoundException("Counterparty or Real Estate object not found");
-
-        var request = await _requestRepository.GetByIdAsync(id);
-        if (request == null)
+        if (!await _requestRepository.ExistsByIdAsync(id))
             throw new KeyNotFoundException($"Request with ID {id} not found");
-
         var updatedRequest = _mapper.Map<Request>(updateDto);
         updatedRequest.Id = id;
         await _requestRepository.UpdateAsync(updatedRequest);

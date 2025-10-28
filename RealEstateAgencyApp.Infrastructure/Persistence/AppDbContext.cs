@@ -12,17 +12,17 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     /// <summary>
     /// DbSet of real estate objects in the agency.
     /// </summary>
-    public DbSet<RealEstateObject> RealEstateObjects { get; set; }
+    public DbSet<RealEstateObject> RealEstateObjects { get; set; } = null!;
 
     /// <summary>
     /// DbSet of counterparties (clients) in the the agency.
     /// </summary>
-    public DbSet<Counterparty> Counterparties { get; set; }
+    public DbSet<Counterparty> Counterparties { get; set; } = null!;
 
     /// <summary>
     /// DbSet of requests, representing buy/sell requests from counterparties.
     /// </summary>
-    public DbSet<Request> Requests { get; set; }
+    public DbSet<Request> Requests { get; set; } = null!;
 
     /// <summary>
     /// Configures the EF Core model.

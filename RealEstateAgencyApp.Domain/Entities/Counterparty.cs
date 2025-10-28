@@ -28,5 +28,5 @@ public class Counterparty
     /// <summary>
     /// Gets or sets the collection of requests made by this counterparty.
     /// </summary>
-    public ICollection<Request> Requests { get; set; } = new List<Request>();
+    public ICollection<Request> Requests { get; set; } = [];
 }

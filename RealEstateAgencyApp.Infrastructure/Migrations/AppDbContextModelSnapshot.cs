@@ -8,165 +8,164 @@ using RealEstateAgencyApp.Infrastructure.Persistence;
 
 #nullable disable
 
-namespace RealEstateAgencyApp.Infrastructure.Migrations
+namespace RealEstateAgencyApp.Infrastructure.Migrations;
+
+[DbContext(typeof(AppDbContext))]
+partial class AppDbContextModelSnapshot : ModelSnapshot
 {
-    [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    protected override void BuildModel(ModelBuilder modelBuilder)
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
-        {
 #pragma warning disable 612, 618
-            modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.10")
-                .HasAnnotation("Relational:MaxIdentifierLength", 64);
+        modelBuilder
+            .HasAnnotation("ProductVersion", "9.0.10")
+            .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
-            MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
+        MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
-            modelBuilder.Entity("RealEstateAgencyApp.Domain.Entities.Counterparty", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+        modelBuilder.Entity("RealEstateAgencyApp.Domain.Entities.Counterparty", b =>
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("FullName")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("varchar(128)");
+                b.Property<string>("FullName")
+                    .IsRequired()
+                    .HasMaxLength(128)
+                    .HasColumnType("varchar(128)");
 
-                    b.Property<string>("PassportNumber")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("varchar(20)");
+                b.Property<string>("PassportNumber")
+                    .IsRequired()
+                    .HasMaxLength(20)
+                    .HasColumnType("varchar(20)");
 
-                    b.Property<string>("Phone")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("varchar(20)");
+                b.Property<string>("Phone")
+                    .IsRequired()
+                    .HasMaxLength(20)
+                    .HasColumnType("varchar(20)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("PassportNumber")
-                        .IsUnique();
+                b.HasIndex("PassportNumber")
+                    .IsUnique();
 
-                    b.ToTable("Counterparties");
-                });
+                b.ToTable("Counterparties");
+            });
 
-            modelBuilder.Entity("RealEstateAgencyApp.Domain.Entities.RealEstateObject", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+        modelBuilder.Entity("RealEstateAgencyApp.Domain.Entities.RealEstateObject", b =>
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                b.Property<string>("Address")
+                    .IsRequired()
+                    .HasMaxLength(256)
+                    .HasColumnType("varchar(256)");
 
-                    b.Property<double>("Area")
-                        .HasColumnType("double");
+                b.Property<double>("Area")
+                    .HasColumnType("double");
 
-                    b.Property<string>("CadastralNumber")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("varchar(30)");
+                b.Property<string>("CadastralNumber")
+                    .IsRequired()
+                    .HasMaxLength(30)
+                    .HasColumnType("varchar(30)");
 
-                    b.Property<double?>("CeilingHeight")
-                        .HasColumnType("double");
+                b.Property<double?>("CeilingHeight")
+                    .HasColumnType("double");
 
-                    b.Property<int?>("Floor")
-                        .HasColumnType("int");
+                b.Property<int?>("Floor")
+                    .HasColumnType("int");
 
-                    b.Property<int?>("Floors")
-                        .HasColumnType("int");
+                b.Property<int?>("Floors")
+                    .HasColumnType("int");
 
-                    b.Property<bool?>("HasEncumbrances")
-                        .HasColumnType("tinyint(1)");
+                b.Property<bool?>("HasEncumbrances")
+                    .HasColumnType("tinyint(1)");
 
-                    b.Property<string>("Purpose")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                b.Property<string>("Purpose")
+                    .IsRequired()
+                    .HasColumnType("longtext");
 
-                    b.Property<int?>("Rooms")
-                        .HasColumnType("int");
+                b.Property<int?>("Rooms")
+                    .HasColumnType("int");
 
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                b.Property<string>("Type")
+                    .IsRequired()
+                    .HasColumnType("longtext");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("CadastralNumber")
-                        .IsUnique();
+                b.HasIndex("CadastralNumber")
+                    .IsUnique();
 
-                    b.ToTable("RealEstateObjects");
-                });
+                b.ToTable("RealEstateObjects");
+            });
 
-            modelBuilder.Entity("RealEstateAgencyApp.Domain.Entities.Request", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+        modelBuilder.Entity("RealEstateAgencyApp.Domain.Entities.Request", b =>
+            {
+                b.Property<int>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CounterpartyId")
-                        .HasColumnType("int");
+                b.Property<int>("CounterpartyId")
+                    .HasColumnType("int");
 
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime(6)");
+                b.Property<DateTime>("Date")
+                    .HasColumnType("datetime(6)");
 
-                    b.Property<int>("EstateId")
-                        .HasColumnType("int");
+                b.Property<int>("EstateId")
+                    .HasColumnType("int");
 
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
+                b.Property<decimal>("Price")
+                    .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                b.Property<string>("Type")
+                    .IsRequired()
+                    .HasColumnType("longtext");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("CounterpartyId");
+                b.HasIndex("CounterpartyId");
 
-                    b.HasIndex("EstateId");
+                b.HasIndex("EstateId");
 
-                    b.ToTable("Requests");
-                });
+                b.ToTable("Requests");
+            });
 
-            modelBuilder.Entity("RealEstateAgencyApp.Domain.Entities.Request", b =>
-                {
-                    b.HasOne("RealEstateAgencyApp.Domain.Entities.Counterparty", "Counterparty")
-                        .WithMany("Requests")
-                        .HasForeignKey("CounterpartyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+        modelBuilder.Entity("RealEstateAgencyApp.Domain.Entities.Request", b =>
+            {
+                b.HasOne("RealEstateAgencyApp.Domain.Entities.Counterparty", "Counterparty")
+                    .WithMany("Requests")
+                    .HasForeignKey("CounterpartyId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("RealEstateAgencyApp.Domain.Entities.RealEstateObject", "Estate")
-                        .WithMany("Requests")
-                        .HasForeignKey("EstateId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.HasOne("RealEstateAgencyApp.Domain.Entities.RealEstateObject", "Estate")
+                    .WithMany("Requests")
+                    .HasForeignKey("EstateId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Counterparty");
+                b.Navigation("Counterparty");
 
-                    b.Navigation("Estate");
-                });
+                b.Navigation("Estate");
+            });
 
-            modelBuilder.Entity("RealEstateAgencyApp.Domain.Entities.Counterparty", b =>
-                {
-                    b.Navigation("Requests");
-                });
+        modelBuilder.Entity("RealEstateAgencyApp.Domain.Entities.Counterparty", b =>
+            {
+                b.Navigation("Requests");
+            });
 
-            modelBuilder.Entity("RealEstateAgencyApp.Domain.Entities.RealEstateObject", b =>
-                {
-                    b.Navigation("Requests");
-                });
+        modelBuilder.Entity("RealEstateAgencyApp.Domain.Entities.RealEstateObject", b =>
+            {
+                b.Navigation("Requests");
+            });
 #pragma warning restore 612, 618
-        }
     }
 }

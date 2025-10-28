@@ -10,30 +10,21 @@ namespace RealEstateAgencyApp.Application.Services;
 /// Service for managing counterparty entities.
 /// Provides CRUD operations for counterparties with business logic validation.
 /// </summary>
-public class CounterpartyService : ICrudService<CounterpartyGetDto, CounterpartyEditDto>
+/// <remarks>
+/// Initializes a new instance of the <see cref="CounterpartyService"/> class.
+/// </remarks>
+/// <param name="counterpartyRepository">The repository for counterparty data access.</param>
+/// <param name="mapper">The mapper for DTO and entity transformations.</param>
+public class CounterpartyService(ICounterpartyRepository counterpartyRepository, IMapper mapper) : ICrudService<CounterpartyGetDto, CounterpartyEditDto>
 {
-    private readonly ICounterpartyRepository _counterpartyRepository;
-    private readonly IMapper _mapper;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="CounterpartyService"/> class.
-    /// </summary>
-    /// <param name="counterpartyRepository">The repository for counterparty data access.</param>
-    /// <param name="mapper">The mapper for DTO and entity transformations.</param>
-    public CounterpartyService(ICounterpartyRepository counterpartyRepository, IMapper mapper)
-    {
-        _counterpartyRepository = counterpartyRepository;
-        _mapper = mapper;
-    }
-
     /// <summary>
     /// Retrieves all counterparties from the system.
     /// </summary>
     /// <returns>A list of all counterparties as DTOs.</returns>
     public async Task<List<CounterpartyGetDto>> GetAllAsync()
     {
-        var counterparties = await _counterpartyRepository.GetAllAsync();
-        return _mapper.Map<List<CounterpartyGetDto>>(counterparties);
+        var counterparties = await counterpartyRepository.GetAllAsync();
+        return mapper.Map<List<CounterpartyGetDto>>(counterparties);
     }
 
     /// <summary>
@@ -43,8 +34,8 @@ public class CounterpartyService : ICrudService<CounterpartyGetDto, Counterparty
     /// <returns>The counterparty DTO if found; otherwise, null.</returns>
     public async Task<CounterpartyGetDto?> GetByIdAsync(int id)
     {
-        var counterparty = await _counterpartyRepository.GetByIdAsync(id);
-        return _mapper.Map<CounterpartyGetDto?>(counterparty);
+        var counterparty = await counterpartyRepository.GetByIdAsync(id);
+        return mapper.Map<CounterpartyGetDto?>(counterparty);
     }
 
     /// <summary>
@@ -55,15 +46,14 @@ public class CounterpartyService : ICrudService<CounterpartyGetDto, Counterparty
     /// <exception cref="InvalidOperationException">Thrown when a counterparty with the same passport number already exists.</exception>
     public async Task<CounterpartyGetDto> CreateAsync(CounterpartyEditDto createDto)
     {
-        // Check if passport number already exists
-        var existingCounterparty = await _counterpartyRepository.GetByPassportNumberAsync(createDto.PassportNumber);
+        var existingCounterparty = await counterpartyRepository.GetByPassportNumberAsync(createDto.PassportNumber);
         if (existingCounterparty != null)
             throw new InvalidOperationException("Counterparty with this passport number already exists");
 
-        var newCounterparty = _mapper.Map<Counterparty>(createDto);
-        await _counterpartyRepository.AddAsync(newCounterparty);
+        var newCounterparty = mapper.Map<Counterparty>(createDto);
+        await counterpartyRepository.AddAsync(newCounterparty);
 
-        return _mapper.Map<CounterpartyGetDto>(newCounterparty);
+        return mapper.Map<CounterpartyGetDto>(newCounterparty);
     }
 
     /// <summary>
@@ -75,18 +65,15 @@ public class CounterpartyService : ICrudService<CounterpartyGetDto, Counterparty
     /// <exception cref="InvalidOperationException">Thrown when the passport number is already taken by another counterparty.</exception>
     public async Task UpdateAsync(int id, CounterpartyEditDto updateDto)
     {
-        var counterparty = await _counterpartyRepository.GetByIdAsync(id);
-        if (counterparty == null)
+        if (!await counterpartyRepository.ExistsByIdAsync(id))
             throw new KeyNotFoundException($"Counterparty with ID {id} not found");
-
-        // Check if passport number is taken by another counterparty
-        var existingCounterparty = await _counterpartyRepository.GetByPassportNumberAsync(updateDto.PassportNumber);
+        var existingCounterparty = await counterpartyRepository.GetByPassportNumberAsync(updateDto.PassportNumber);
         if (existingCounterparty != null && existingCounterparty.Id != id)
             throw new InvalidOperationException("Counterparty with this passport number already exists");
 
-        var updatedCounterparty = _mapper.Map<Counterparty>(updateDto);
+        var updatedCounterparty = mapper.Map<Counterparty>(updateDto);
         updatedCounterparty.Id = id;
-        await _counterpartyRepository.UpdateAsync(updatedCounterparty);
+        await counterpartyRepository.UpdateAsync(updatedCounterparty);
     }
 
     /// <summary>
@@ -96,10 +83,9 @@ public class CounterpartyService : ICrudService<CounterpartyGetDto, Counterparty
     /// <exception cref="KeyNotFoundException">Thrown when the counterparty with specified ID is not found.</exception>
     public async Task DeleteAsync(int id)
     {
-        var isExists = await _counterpartyRepository.ExistsByIdAsync(id);
-        if (!isExists)
+        if (!await counterpartyRepository.ExistsByIdAsync(id))
             throw new KeyNotFoundException($"Counterparty with ID {id} not found");
 
-        await _counterpartyRepository.DeleteAsync(id);
+        await counterpartyRepository.DeleteAsync(id);
     }
 }
