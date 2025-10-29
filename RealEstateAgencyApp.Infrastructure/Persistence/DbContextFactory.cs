@@ -4,8 +4,14 @@ using Microsoft.Extensions.Configuration;
 
 namespace RealEstateAgencyApp.Infrastructure.Persistence;
 
+/// <summary>
+/// Factory for creating AppDbContext instances for EF Core design-time tools.
+/// </summary>
 public class DbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
 {
+    /// <summary>
+    /// Creates AppDbContext with configuration from AppSettings.json.
+    /// </summary>
     public AppDbContext CreateDbContext(string[] args)
     {
         var configuration = new ConfigurationBuilder()
