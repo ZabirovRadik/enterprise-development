@@ -1,3 +1,4 @@
+using RealEstateAgencyApp.Domain.Entities;
 using RealEstateAgencyApp.Domain.Entities.Enums;
 
 namespace RealEstateAgencyApp.Contracts.Dtos.RequestDtos;
@@ -8,14 +9,14 @@ namespace RealEstateAgencyApp.Contracts.Dtos.RequestDtos;
 public class RequestEditDto
 {
     /// <summary>
-    /// ID of the counterparty making the request.
+    /// Gets or sets the counterparty making the request.
     /// </summary>
-    public required int CounterpartyID { get; set; }
+    public required Counterparty Counterparty { get; set; }
 
     /// <summary>
-    /// ID of the real estate object related to the request.
+    /// Gets or sets the real estate object related to the request.
     /// </summary>
-    public required int EstateID { get; set; }
+    public required RealEstateObject Estate { get; set; }
 
     /// <summary>
     /// Type of the request (buy or sell).
