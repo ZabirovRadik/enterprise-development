@@ -79,8 +79,8 @@ public class RequestService(
     /// <exception cref="KeyNotFoundException">Thrown when the specified counterparty or real estate object is not found.</exception>
     public async Task<RequestGetDto> CreateAsync(RequestEditDto createDto)
     {
-        var isCounterpartyExists = await _counterpartyRepository.ExistsByIdAsync(createDto.CounterpartyID);
-        var isEstateExists = await _realEstateRepository.ExistsByIdAsync(createDto.EstateID);
+        var isCounterpartyExists = await _counterpartyRepository.ExistsByIdAsync(createDto.Counterparty.Id);
+        var isEstateExists = await _realEstateRepository.ExistsByIdAsync(createDto.Counterparty.Id);
 
         if (!isCounterpartyExists || !isEstateExists)
             throw new KeyNotFoundException("Counterparty or Real Estate object not found");
@@ -99,8 +99,8 @@ public class RequestService(
     /// <exception cref="KeyNotFoundException">Thrown when the request with specified ID is not found or when counterparty/real estate object is not found.</exception>
     public async Task UpdateAsync(int id, RequestEditDto updateDto)
     {
-        var isCounterpartyExists = await _counterpartyRepository.ExistsByIdAsync(updateDto.CounterpartyID);
-        var isEstateExists = await _realEstateRepository.ExistsByIdAsync(updateDto.EstateID);
+        var isCounterpartyExists = await _counterpartyRepository.ExistsByIdAsync(updateDto.Counterparty.Id);
+        var isEstateExists = await _realEstateRepository.ExistsByIdAsync(updateDto.Estate.Id);
 
         if (!isCounterpartyExists || !isEstateExists)
             throw new KeyNotFoundException("Counterparty or Real Estate object not found");

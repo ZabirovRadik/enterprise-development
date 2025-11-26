@@ -1,0 +1,23 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "RealEstateAgencyApp.Contracts.Grpc";
+
+import "google/protobuf/timestamp.proto";
+
+service RealEstateStreaming {
+  rpc StreamRequests (stream RequestStreamMessage) returns (stream ResponseStreamMessage);
+}
+
+message RequestStreamMessage {
+  int32 counterparty_id = 1;
+  int32 estate_id = 2;
+  string type = 3;
+  double price = 4;
+  google.protobuf.Timestamp date = 5;
+}
+
+message ResponseStreamMessage {
+  bool success = 1;
+  string message = 2;
+  google.protobuf.Timestamp timestamp = 3;
+}

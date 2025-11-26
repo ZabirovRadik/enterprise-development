@@ -17,7 +17,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RealEstateAgencyApp.Api\RealEstateAgencyApp.Api.csproj" />
-    <ProjectReference Include="..\RealEstateAgencyApp.Grp\RealEstateAgencyApp.Grp.csproj" />
+    <ProjectReference Include="..\RealEstateAgencyApp.GrpcConsumer\RealEstateAgencyApp.GrpcConsumer.csproj" />
+    <ProjectReference Include="..\RealEstateAgencyApp.GrpcProducer\RealEstateAgencyApp.GrpcProducer.csproj" />
   </ItemGroup>
 
 </Project>
