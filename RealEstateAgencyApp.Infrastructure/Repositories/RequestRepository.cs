@@ -20,6 +20,7 @@ public class RequestRepository(AppDbContext context) : IRequestRepository
         await context.Requests
             .Include(r => r.Counterparty)
             .Include(r => r.Estate)
+            .OrderBy(r => r.Id)
             .ToListAsync();
 
     /// <summary>
@@ -31,6 +32,7 @@ public class RequestRepository(AppDbContext context) : IRequestRepository
         await context.Requests
             .Include(r => r.Counterparty)
             .Include(r => r.Estate)
+            .OrderBy(r => r.Id)
             .FirstOrDefaultAsync(r => r.Id == id);
 
     /// <summary>
@@ -42,6 +44,7 @@ public class RequestRepository(AppDbContext context) : IRequestRepository
         await context.Requests
             .Include(r => r.Estate)
             .Where(r => r.Counterparty.Id == counterpartyId)
+            .OrderBy(r => r.Id)
             .ToListAsync();
 
     /// <summary>
@@ -53,6 +56,7 @@ public class RequestRepository(AppDbContext context) : IRequestRepository
         await context.Requests
             .Include(r => r.Counterparty)
             .Where(r => r.Estate.Id == estateId)
+            .OrderBy(r => r.Id)
             .ToListAsync();
 
     /// <summary>
@@ -65,6 +69,7 @@ public class RequestRepository(AppDbContext context) : IRequestRepository
             .Include(r => r.Counterparty)
             .Include(r => r.Estate)
             .Where(r => r.Type == type)
+            .OrderBy(r => r.Id)
             .ToListAsync();
 
     /// <summary>
@@ -78,6 +83,7 @@ public class RequestRepository(AppDbContext context) : IRequestRepository
             .Include(r => r.Counterparty)
             .Include(r => r.Estate)
             .Where(r => r.Date >= startDate && r.Date <= endDate)
+            .OrderBy(r => r.Id)
             .ToListAsync();
 
     /// <summary>

@@ -1,6 +1,5 @@
 using Grpc.Net.Client;
 using RealEstateAgencyApp.Contracts.Grpc;
-using RealEstateAgencyApp.GrpcProducer.Controllers;
 using RealEstateAgencyApp.GrpcProducer.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 
 builder.Services.AddSingleton(serviceProvider =>
 {
@@ -28,6 +28,7 @@ builder.Services.AddSingleton(serviceProvider =>
 builder.Services.AddSingleton<RequestGeneratorService>();
 
 var app = builder.Build();
+app.MapGet("/", () => Results.Redirect("/swagger"));
 
 if (app.Environment.IsDevelopment())
 {

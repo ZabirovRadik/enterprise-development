@@ -4,6 +4,9 @@ using RealEstateAgencyApp.Contracts.Grpc;
 
 namespace RealEstateAgencyApp.GrpcProducer.Services;
 
+/// <summary>
+/// Service for generating real estate requests and sending them via gRPC.
+/// </summary>
 public class RequestGeneratorService
 {
     private readonly ILogger<RequestGeneratorService> _logger;
@@ -21,9 +24,40 @@ public class RequestGeneratorService
     }
 
     /// <summary>
-    /// Генерирует и отправляет указанное количество запросов
+    /// Starts automatic generation of real estate requests.
+    /// Uses settings from configuration for batch size and timing.
     /// </summary>
-    public async Task<bool> GenerateAndSendRequests(int count, CancellationToken stoppingToken = default)
+    public async Task GenerateAutomatically(CancellationToken stoppingToken = default)
+    {
+        var batchSize = _configuration.GetValue<int>("Generator:BatchSize", 5);
+        var payloadLimit = _configuration.GetValue<int>("Generator:PayloadLimit", 20);
+        var waitTime = _configuration.GetValue<int>("Generator:WaitTime", 3);
+
+        _logger.LogInformation("Starting automatic generation: batchSize={BatchSize}, limit={Limit}, wait={Wait}s",
+            batchSize, payloadLimit, waitTime);
+
+        var counter = 0;
+
+        while (counter < payloadLimit && !stoppingToken.IsCancellationRequested)
+        {
+            var success = await GenerateAndSendRequests(batchSize, stoppingToken);
+            if (success)
+            {
+                counter += batchSize;
+                _logger.LogInformation("Sent batch of {BatchSize} requests. Total: {Total}", batchSize, counter);
+            }
+
+            await Task.Delay(waitTime * 1000, stoppingToken);
+        }
+
+        _logger.LogInformation("Automatic generation finished. Total sent: {Total}", counter);
+    }
+
+    /// <summary>
+    /// Generates and sends a batch of requests via gRPC streaming.
+    /// Retries up to 3 times if sending fails.
+    /// </summary>
+    private async Task<bool> GenerateAndSendRequests(int count, CancellationToken stoppingToken = default)
     {
         const int maxRetries = 3;
         var retryCount = 0;
@@ -44,7 +78,7 @@ public class RequestGeneratorService
                         CounterpartyId = faker.Random.Int(1, 10),
                         EstateId = faker.Random.Int(1, 10),
                         Type = faker.PickRandom("Buy", "Sell"),
-                        Price = faker.Random.Double(100000, 5000000),
+                        Price = faker.Random.Int(100000, 5000000),
                         Date = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTime(DateTime.UtcNow)
                     };
 
@@ -83,34 +117,5 @@ public class RequestGeneratorService
         }
 
         return false;
-    }
-
-    /// <summary>
-    /// Генерирует запросы автоматически по настройкам из конфигурации
-    /// </summary>
-    public async Task GenerateAutomatically(CancellationToken stoppingToken = default)
-    {
-        var batchSize = _configuration.GetValue<int>("Generator:BatchSize", 5);
-        var payloadLimit = _configuration.GetValue<int>("Generator:PayloadLimit", 20);
-        var waitTime = _configuration.GetValue<int>("Generator:WaitTime", 3);
-
-        _logger.LogInformation("Starting automatic generation: batchSize={BatchSize}, limit={Limit}, wait={Wait}s",
-            batchSize, payloadLimit, waitTime);
-
-        var counter = 0;
-
-        while (counter < payloadLimit && !stoppingToken.IsCancellationRequested)
-        {
-            var success = await GenerateAndSendRequests(batchSize, stoppingToken);
-            if (success)
-            {
-                counter += batchSize;
-                _logger.LogInformation("Sent batch of {BatchSize} requests. Total: {Total}", batchSize, counter);
-            }
-
-            await Task.Delay(waitTime * 1000, stoppingToken);
-        }
-
-        _logger.LogInformation("Automatic generation finished. Total sent: {Total}", counter);
     }
 }

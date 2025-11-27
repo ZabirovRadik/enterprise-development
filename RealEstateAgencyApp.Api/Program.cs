@@ -8,10 +8,17 @@ using RealEstateAgencyApp.Domain.Interfaces;
 using RealEstateAgencyApp.Infrastructure.Persistence;
 using RealEstateAgencyApp.Infrastructure.Repositories;
 using RealEstateAgencyApp.ServiceDefaults;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
