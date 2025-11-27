@@ -8,11 +8,18 @@
 
   <ItemGroup>
     <PackageReference Include="Grpc.AspNetCore" Version="2.71.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.10">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
 
   <ItemGroup>
+    <ProjectReference Include="..\RealEstateAgencyApp.Application\RealEstateAgencyApp.Application.csproj" />
     <ProjectReference Include="..\RealEstateAgencyApp.Contracts\RealEstateAgencyApp.Contracts.csproj" />
+    <ProjectReference Include="..\RealEstateAgencyApp.Infrastructure\RealEstateAgencyApp.Infrastructure.csproj" />
+    <ProjectReference Include="..\RealEstateAgencyApp.ServiceDefaults\RealEstateAgencyApp.ServiceDefaults.csproj" />
   </ItemGroup>
 
 </Project>

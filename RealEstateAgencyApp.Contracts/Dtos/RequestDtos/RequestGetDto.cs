@@ -14,14 +14,34 @@ public class RequestGetDto
     public required int Id { get; set; }
 
     /// <summary>
-    /// Gets or sets the counterparty making the request.
+    /// Gets or sets the counterparty identifier making the request.
     /// </summary>
-    public required Counterparty Counterparty { get; set; }
+    public required int CounterpartyId { get; set; }
 
     /// <summary>
-    /// Gets or sets the real estate object related to the request.
+    /// Gets or sets the full name of the counterparty.
     /// </summary>
-    public required RealEstateObject Estate { get; set; }
+    public required string CounterpartyName { get; set; }
+
+    /// <summary>
+    /// Gets or sets the phone number of the counterparty.
+    /// </summary>
+    public required string CounterpartyPhone { get; set; }
+
+    /// <summary>
+    /// Gets or sets the real estate object identifier related to the request.
+    /// </summary>
+    public required int EstateId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the address of the real estate object.
+    /// </summary>
+    public required string EstateAddress { get; set; }
+
+    /// <summary>
+    /// Gets or sets the cadastral number of the real estate object.
+    /// </summary>
+    public required string EstateCadastralNumber { get; set; }
 
     /// <summary>
     /// Type of the request (buy or sell).

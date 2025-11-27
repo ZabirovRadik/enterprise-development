@@ -20,20 +20,17 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RealEstateAgencyApp.Application", "RealEstateAgencyApp.Application\RealEstateAgencyApp.Application.csproj", "{438C3946-B6D8-49AF-8B3E-F04C1C201D12}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RealEstateAgencyApp.AppHost", "RealEstateAgencyApp.AppHost\RealEstateAgencyApp.AppHost.csproj", "{4E1DBCC7-3B18-41B2-8655-52E910658D4A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1A722C26-CAFF-A4FC-B3D2-49A08CF60633} = {1A722C26-CAFF-A4FC-B3D2-49A08CF60633}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RealEstateAgencyApp.ServiceDefaults", "RealEstateAgencyApp.ServiceDefaults\RealEstateAgencyApp.ServiceDefaults.csproj", "{5ACC7110-3E47-4F94-BB49-289F6466FEF2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RealEstateAgencyApp.Contracts", "RealEstateAgencyApp.Contracts\RealEstateAgencyApp.Contracts.csproj", "{4EB012DE-5345-4949-9CCC-FC6F2D5BC445}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RealEstateAgencyApp.GrpcProducer", "RealEstateAgencyApp.GrpcProducer\RealEstateAgencyApp.GrpcProducer.csproj", "{3FE7A725-038C-F76E-E075-BB39A6515EF6}"
-	ProjectSection(ProjectDependencies) = postProject
-		{4EB012DE-5345-4949-9CCC-FC6F2D5BC445} = {4EB012DE-5345-4949-9CCC-FC6F2D5BC445}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RealEstateAgencyApp.GrpcConsumer", "RealEstateAgencyApp.GrpcConsumer\RealEstateAgencyApp.GrpcConsumer.csproj", "{1A722C26-CAFF-A4FC-B3D2-49A08CF60633}"
-	ProjectSection(ProjectDependencies) = postProject
-		{4EB012DE-5345-4949-9CCC-FC6F2D5BC445} = {4EB012DE-5345-4949-9CCC-FC6F2D5BC445}
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

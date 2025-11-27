@@ -80,8 +80,8 @@ public class RequestService(
     public async Task<RequestGetDto> CreateAsync(RequestEditDto createDto)
     {
         var isCounterpartyExists = await _counterpartyRepository.ExistsByIdAsync(createDto.Counterparty.Id);
-        var isEstateExists = await _realEstateRepository.ExistsByIdAsync(createDto.Counterparty.Id);
-
+        var isEstateExists = await _realEstateRepository.ExistsByIdAsync(createDto.Estate.Id);
+        
         if (!isCounterpartyExists || !isEstateExists)
             throw new KeyNotFoundException("Counterparty or Real Estate object not found");
 

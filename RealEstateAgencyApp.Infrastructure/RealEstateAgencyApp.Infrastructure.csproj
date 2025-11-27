@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\RealEstateAgencyApp.Contracts\RealEstateAgencyApp.Contracts.csproj" />
     <ProjectReference Include="..\RealEstateAgencyApp.Domain\RealEstateAgencyApp.Domain.csproj" />
   </ItemGroup>
 
