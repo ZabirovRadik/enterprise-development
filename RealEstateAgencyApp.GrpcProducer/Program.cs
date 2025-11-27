@@ -11,7 +11,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton(serviceProvider =>
 {
-    var grpcServiceUrl = "https://localhost:7002";
+    var grpcServiceUrl = builder.Configuration["Grpc:ServiceUrl"]
+           ?? throw new InvalidOperationException("Grpc:ServiceUrl is not configured");
     var httpHandler = new HttpClientHandler();
 
     httpHandler.ServerCertificateCustomValidationCallback =

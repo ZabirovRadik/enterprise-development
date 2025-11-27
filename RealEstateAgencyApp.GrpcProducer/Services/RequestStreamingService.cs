@@ -59,26 +59,39 @@ public class RequestGeneratorService
     /// </summary>
     private async Task<bool> GenerateAndSendRequests(int count, CancellationToken stoppingToken = default)
     {
-        const int maxRetries = 3;
+        var maxRetries = _configuration.GetValue<int>("Generator:MaxRetries", 3);
+        var retryDelaySeconds = _configuration.GetValue<int>("Generator:RetryDelaySeconds", 5);
         var retryCount = 0;
 
         _logger.LogInformation("Starting generation of {Count} requests", count);
-
+        var dataConfig = _configuration.GetSection("Generator:Data");
+        var grpcTimeout = _configuration.GetValue<int>("Generator:GrpcTimeoutSeconds", 30);
         while (retryCount < maxRetries && !stoppingToken.IsCancellationRequested)
         {
             try
             {
                 var faker = new Faker();
-                using var call = _client.StreamRequests(deadline: DateTime.UtcNow.AddSeconds(30));
+                using var call = _client.StreamRequests(deadline: DateTime.UtcNow.AddSeconds(grpcTimeout));
 
                 for (var i = 0; i < count; i++)
                 {
                     var request = new RequestStreamMessage
                     {
-                        CounterpartyId = faker.Random.Int(1, 10),
-                        EstateId = faker.Random.Int(1, 10),
-                        Type = faker.PickRandom("Buy", "Sell"),
-                        Price = faker.Random.Int(100000, 5000000),
+                        CounterpartyId = faker.Random.Int(
+                            dataConfig.GetValue<int>("CounterpartyIdRange:Min", 1),
+                            dataConfig.GetValue<int>("CounterpartyIdRange:Max", 10)
+                        ),
+                        EstateId = faker.Random.Int(
+                            dataConfig.GetValue<int>("EstateIdRange:Min", 1),
+                            dataConfig.GetValue<int>("EstateIdRange:Max", 10)
+                        ),
+                        Type = faker.PickRandom(
+                            dataConfig.GetSection("RequestTypes").Get<string[]>() ?? new[] { "Buy", "Sell" }
+                        ),
+                        Price = faker.Random.Int(
+                            dataConfig.GetValue<int>("PriceRange:Min", 100000),
+                            dataConfig.GetValue<int>("PriceRange:Max", 5000000)
+                        ),
                         Date = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTime(DateTime.UtcNow)
                     };
 
@@ -106,7 +119,7 @@ public class RequestGeneratorService
 
                 if (retryCount < maxRetries)
                 {
-                    await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
+                    await Task.Delay(TimeSpan.FromSeconds(retryDelaySeconds), stoppingToken);
                 }
                 else
                 {
