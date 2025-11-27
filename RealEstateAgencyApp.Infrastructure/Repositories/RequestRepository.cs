@@ -42,6 +42,7 @@ public class RequestRepository(AppDbContext context) : IRequestRepository
     /// <returns>List of requests for specified counterparty.</returns>
     public async Task<IEnumerable<Request>> GetByCounterpartyIdAsync(int counterpartyId) =>
         await context.Requests
+            .Include(r => r.Counterparty)
             .Include(r => r.Estate)
             .Where(r => r.Counterparty.Id == counterpartyId)
             .OrderBy(r => r.Id)
@@ -55,6 +56,7 @@ public class RequestRepository(AppDbContext context) : IRequestRepository
     public async Task<IEnumerable<Request>> GetByEstateIdAsync(int estateId) =>
         await context.Requests
             .Include(r => r.Counterparty)
+            .Include(r => r.Estate)
             .Where(r => r.Estate.Id == estateId)
             .OrderBy(r => r.Id)
             .ToListAsync();
