@@ -1,27 +1,20 @@
 using Bogus;
 using Grpc.Core;
+using Microsoft.Extensions.Options;
 using RealEstateAgencyApp.Contracts.Grpc;
+using RealEstateAgencyApp.GrpcProducer.Configurations;
 
 namespace RealEstateAgencyApp.GrpcProducer.Services;
 
 /// <summary>
 /// Service for generating real estate requests and sending them via gRPC.
 /// </summary>
-public class RequestGeneratorService
+public class RequestGeneratorService(
+    ILogger<RequestGeneratorService> logger,
+    RealEstateStreaming.RealEstateStreamingClient client,
+    IOptions<GeneratorOptions> options)
 {
-    private readonly ILogger<RequestGeneratorService> _logger;
-    private readonly RealEstateStreaming.RealEstateStreamingClient _client;
-    private readonly IConfiguration _configuration;
-
-    public RequestGeneratorService(
-        ILogger<RequestGeneratorService> logger,
-        RealEstateStreaming.RealEstateStreamingClient client,
-        IConfiguration configuration)
-    {
-        _logger = logger;
-        _client = client;
-        _configuration = configuration;
-    }
+    private readonly GeneratorOptions _options = options.Value;
 
     /// <summary>
     /// Starts automatic generation of real estate requests.
@@ -29,28 +22,24 @@ public class RequestGeneratorService
     /// </summary>
     public async Task GenerateAutomatically(CancellationToken stoppingToken = default)
     {
-        var batchSize = _configuration.GetValue<int>("Generator:BatchSize", 5);
-        var payloadLimit = _configuration.GetValue<int>("Generator:PayloadLimit", 20);
-        var waitTime = _configuration.GetValue<int>("Generator:WaitTime", 3);
-
-        _logger.LogInformation("Starting automatic generation: batchSize={BatchSize}, limit={Limit}, wait={Wait}s",
-            batchSize, payloadLimit, waitTime);
+        logger.LogInformation("Starting automatic generation: batchSize={BatchSize}, limit={Limit}, wait={Wait}s",
+            _options.BatchSize, _options.PayloadLimit, _options.WaitTime);
 
         var counter = 0;
 
-        while (counter < payloadLimit && !stoppingToken.IsCancellationRequested)
+        while (counter < _options.PayloadLimit && !stoppingToken.IsCancellationRequested)
         {
-            var success = await GenerateAndSendRequests(batchSize, stoppingToken);
+            var success = await GenerateAndSendRequests(_options.BatchSize, stoppingToken);
             if (success)
             {
-                counter += batchSize;
-                _logger.LogInformation("Sent batch of {BatchSize} requests. Total: {Total}", batchSize, counter);
+                counter += _options.BatchSize;
+                logger.LogDebug("Sent batch of {BatchSize} requests. Total: {Total}", _options.BatchSize, counter);
             }
 
-            await Task.Delay(waitTime * 1000, stoppingToken);
+            await Task.Delay(_options.WaitTime * 100, stoppingToken);
         }
 
-        _logger.LogInformation("Automatic generation finished. Total sent: {Total}", counter);
+        logger.LogInformation("Automatic generation finished. Total sent: {Total}", counter);
     }
 
     /// <summary>
@@ -59,44 +48,38 @@ public class RequestGeneratorService
     /// </summary>
     private async Task<bool> GenerateAndSendRequests(int count, CancellationToken stoppingToken = default)
     {
-        var maxRetries = _configuration.GetValue<int>("Generator:MaxRetries", 3);
-        var retryDelaySeconds = _configuration.GetValue<int>("Generator:RetryDelaySeconds", 5);
         var retryCount = 0;
 
-        _logger.LogInformation("Starting generation of {Count} requests", count);
-        var dataConfig = _configuration.GetSection("Generator:Data");
-        var grpcTimeout = _configuration.GetValue<int>("Generator:GrpcTimeoutSeconds", 30);
-        while (retryCount < maxRetries && !stoppingToken.IsCancellationRequested)
+        logger.LogDebug("Starting generation of {Count} requests", count);
+
+        while (retryCount < _options.MaxRetries && !stoppingToken.IsCancellationRequested)
         {
             try
             {
                 var faker = new Faker();
-                using var call = _client.StreamRequests(deadline: DateTime.UtcNow.AddSeconds(grpcTimeout));
+                using var call = client.StreamRequests(
+                    deadline: DateTime.UtcNow.AddSeconds(_options.GrpcTimeoutSeconds),
+                    cancellationToken: stoppingToken);
 
                 for (var i = 0; i < count; i++)
                 {
                     var request = new RequestStreamMessage
                     {
                         CounterpartyId = faker.Random.Int(
-                            dataConfig.GetValue<int>("CounterpartyIdRange:Min", 1),
-                            dataConfig.GetValue<int>("CounterpartyIdRange:Max", 10)
-                        ),
+                            _options.Data.CounterpartyIdRange.Min,
+                            _options.Data.CounterpartyIdRange.Max),
                         EstateId = faker.Random.Int(
-                            dataConfig.GetValue<int>("EstateIdRange:Min", 1),
-                            dataConfig.GetValue<int>("EstateIdRange:Max", 10)
-                        ),
-                        Type = faker.PickRandom(
-                            dataConfig.GetSection("RequestTypes").Get<string[]>() ?? new[] { "Buy", "Sell" }
-                        ),
+                            _options.Data.EstateIdRange.Min,
+                            _options.Data.EstateIdRange.Max),
+                        Type = faker.PickRandom(_options.Data.RequestTypes),
                         Price = faker.Random.Int(
-                            dataConfig.GetValue<int>("PriceRange:Min", 100000),
-                            dataConfig.GetValue<int>("PriceRange:Max", 5000000)
-                        ),
+                            _options.Data.PriceRange.Min,
+                            _options.Data.PriceRange.Max),
                         Date = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTime(DateTime.UtcNow)
                     };
 
-                    await call.RequestStream.WriteAsync(request);
-                    _logger.LogInformation("Sent request {Count} with counterparty {CounterpartyId}, estate {EstateId}",
+                    await call.RequestStream.WriteAsync(request, stoppingToken);
+                    logger.LogDebug("Sent request {Count} with counterparty {CounterpartyId}, estate {EstateId}",
                         i + 1, request.CounterpartyId, request.EstateId);
                 }
 
@@ -106,24 +89,25 @@ public class RequestGeneratorService
                 await foreach (var response in call.ResponseStream.ReadAllAsync(stoppingToken))
                 {
                     responses.Add(response);
-                    _logger.LogInformation("Received response: {Success} - {Message}", response.Success, response.Message);
+                    logger.LogDebug("Received response: {Success} - {Message}", response.Success, response.Message);
                 }
 
-                _logger.LogInformation("Successfully completed batch with {ResponseCount} responses", responses.Count);
+                logger.LogInformation("Successfully completed batch with {ResponseCount} responses", responses.Count);
                 return true;
             }
             catch (Exception ex)
             {
                 retryCount++;
-                _logger.LogWarning(ex, "Failed to send batch (attempt {RetryCount}/{MaxRetries})", retryCount, maxRetries);
+                logger.LogWarning(ex, "Failed to send batch (attempt {RetryCount}/{MaxRetries})",
+                    retryCount, _options.MaxRetries);
 
-                if (retryCount < maxRetries)
+                if (retryCount < _options.MaxRetries)
                 {
-                    await Task.Delay(TimeSpan.FromSeconds(retryDelaySeconds), stoppingToken);
+                    await Task.Delay(TimeSpan.FromSeconds(_options.RetryDelaySeconds), stoppingToken);
                 }
                 else
                 {
-                    _logger.LogError(ex, "Failed to send batch after {MaxRetries} attempts", maxRetries);
+                    logger.LogError(ex, "Failed to send batch after {MaxRetries} attempts", _options.MaxRetries);
                     return false;
                 }
             }

@@ -1,5 +1,3 @@
-using Google.Protobuf.WellKnownTypes;
-
 var builder = DistributedApplication.CreateBuilder(args);
 
 var mysql = builder.AddMySql("mysql");

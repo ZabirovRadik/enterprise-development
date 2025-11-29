@@ -13,10 +13,11 @@ builder.Services.AddSingleton(serviceProvider =>
 {
     var grpcServiceUrl = builder.Configuration["Grpc:ServiceUrl"]
            ?? throw new InvalidOperationException("Grpc:ServiceUrl is not configured");
-    var httpHandler = new HttpClientHandler();
-
-    httpHandler.ServerCertificateCustomValidationCallback =
-        HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+    var httpHandler = new HttpClientHandler
+    {
+        ServerCertificateCustomValidationCallback =
+            HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+    };
 
     var channel = GrpcChannel.ForAddress(grpcServiceUrl, new GrpcChannelOptions
     {

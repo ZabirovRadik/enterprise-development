@@ -5,19 +5,9 @@ namespace RealEstateAgencyApp.GrpcProducer.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class GeneratorController : ControllerBase
+public class GeneratorController(RequestGeneratorService generatorService,
+        ILogger<GeneratorController> logger) : ControllerBase
 {
-    private readonly RequestGeneratorService _generatorService;
-    private readonly ILogger<GeneratorController> _logger;
-
-    public GeneratorController(
-        RequestGeneratorService generatorService,
-        ILogger<GeneratorController> logger)
-    {
-        _generatorService = generatorService;
-        _logger = logger;
-    }
-
     /// <summary>
     /// Starts automatic generation according to settings
     /// </summary>
@@ -26,9 +16,9 @@ public class GeneratorController : ControllerBase
     {
         try
         {
-            _logger.LogInformation("Auto generation started");
+            logger.LogInformation("Auto generation started");
 
-            _ = _generatorService.GenerateAutomatically();
+            _ = generatorService.GenerateAutomatically();
 
             return Ok(new
             {
@@ -39,7 +29,7 @@ public class GeneratorController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error starting auto generation");
+            logger.LogError(ex, "Error starting auto generation");
             return StatusCode(500, new
             {
                 success = false,

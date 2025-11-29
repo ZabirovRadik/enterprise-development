@@ -85,11 +85,23 @@ public class RealEstateStreamingService : RealEstateStreaming.RealEstateStreamin
                 return false;
             }
 
+            if (!Enum.TryParse<RequestType>(request.Type, out var requestType))
+            {
+                _logger.LogWarning("Invalid request type: {Type}", request.Type);
+                return false;
+            }
+
+            if (request.Price <= 0)
+            {
+                _logger.LogWarning("Invalid price: {Price}", request.Price);
+                return false;
+            }
+
             var requestDto = new RequestEditDto
             {
                 Counterparty = counterparty,
                 Estate = estate,
-                Type = Enum.Parse<RequestType>(request.Type),
+                Type = requestType,
                 Price = (decimal)request.Price,
                 Date = request.Date.ToDateTime()
             };
